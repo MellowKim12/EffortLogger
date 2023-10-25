@@ -36,13 +36,17 @@ public class Main extends Application {
     }
     
     public void start(Stage primaryStage) {
-    	//connection string
-    	String connectionString = "mongodb+srv://eyenriqu:XmIKNbx9Oyj7YMTp@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
-        try (MongoClient mongoClient = MongoClients.create(connectionString)) {
-            try {
-                // Send a ping to confirm a successful connection
-                MongoDatabase db = mongoClient.getDatabase("Effortlogs");
-                MongoCollection<Document> col = db.getCollection("logs");
+    	//connection string replace username with your username and password with your password
+    	String connectionString = "mongodb+srv://<username>:<password>@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
+    	MongoDatabase db;
+    	MongoCollection<Document> col;
+    	//trying to connect the driver 
+    	try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+           //this second try is for anything mongo related
+    		try {
+    			//finding the database and collection
+                db = mongoClient.getDatabase("Effortlogs");
+                col = db.getCollection("logs");
 
             } catch (MongoException e) {
                 e.printStackTrace();
@@ -51,7 +55,7 @@ public class Main extends Application {
     	
     }
     
-    //insert into logs collection in database we have to manually pass the db
+    //insert into logs collection in database we have to manually pass the db feel free to add more tags
     public void insertLog(String user, int security, String description, MongoDatabase db) {
     	MongoCollection<Document> col = db.getCollection("logs"); 
         Document test = new Document("user",user)
@@ -63,10 +67,10 @@ public class Main extends Application {
     }
     
     //helps find every document in the database that matches a filter and data
-    //If you are looking for a user who's know is AJ then filter variable would = user 
+    //If you are looking for a user who's name is AJ then filter variable would = user 
     //data would = AJ
-    //pass the database in the start method
-    //returns an iterable that has all the documents
+    //pass the database from the start method
+    //returns an iterable that has all the documents found
     public FindIterable<Document> findAll(String filter, String data, MongoDatabase db)
     {
     	MongoCollection<Document> col = db.getCollection("logs");
@@ -81,7 +85,7 @@ public class Main extends Application {
     }
     
     
-    //print all logs that where found and store in an iterable
+    //print all logs that where found and stored in an iterable
     public void printLogs(FindIterable<Document> iterable) {
     	MongoCursor<Document> results = iterable.iterator();
         while(results.hasNext())
