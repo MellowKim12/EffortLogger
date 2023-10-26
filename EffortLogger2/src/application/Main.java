@@ -23,10 +23,9 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.eq;
 import java.security.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bson.Document;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Updates.*;
 
 
 public class Main extends Application {
@@ -47,7 +46,7 @@ public class Main extends Application {
     			//finding the database and collection
                 db = mongoClient.getDatabase("Effortlogs");
                 col = db.getCollection("logs");
-
+                update("log-num", "7", 8, col);
             } catch (MongoException e) {
                 e.printStackTrace();
             }
@@ -56,9 +55,12 @@ public class Main extends Application {
     }
     
     //insert into logs collection in database we have to manually pass the db feel free to add more tags
-    public void insertLog(String user, int security, String description, MongoDatabase db) {
+    //to get the amounts of logs use col.count() and add 1 
+    // example use: insertLog("Cole", 1, "description of user story", col.countDocuments() + 1, db)
+    public void insertLog(String user, int security, String description,long logs, MongoDatabase db) {
     	MongoCollection<Document> col = db.getCollection("logs"); 
         Document test = new Document("user",user)
+        		.append("log-num", logs)
         		.append("security-level", security)
         		.append("Description", description)
         		.append("TimeStamp", new java.util.Date());
@@ -95,5 +97,22 @@ public class Main extends Application {
         }
     }
     
+    //finds the log we want to delete by log number then deletes it
+    public void deleteLog(long logNum, MongoCollection<Document> col){
+    	col.deleteOne(eq("log-num", logNum));
+    	System.out.println("Deleted Document in DB");
+    }
+    
+    //finds log by log number then sets attribute you decided in update string with data 
+    public void update(String update, String data,long logNum,MongoCollection<Document> col) {
+    	if(update.equals("log-num") || update.equals("security-level"))
+    	{
+    		col.findOneAndUpdate(eq("log-num", logNum), set(update, Integer.parseInt(data)));
+    	}
+    	else {
+    		col.findOneAndUpdate(eq("log-num", logNum), set(update, data));
+    	}
+    	System.out.println("Updated Document in DB");
+    }
     
 }
