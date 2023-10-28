@@ -1,6 +1,7 @@
 package application;
 	
 import java.util.Scanner;
+import java.util.InputMismatchException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,9 +23,14 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
+
 import static com.mongodb.client.model.Filters.eq;
 import java.security.Timestamp;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Sorts.descending;
@@ -49,9 +55,11 @@ public class Main extends Application {
     	
     	int project = 1;
     	
+    	
+    	
     	//stuff needed for the big while loop
     	String continueChoice = "y";
-    	int action;
+    	int action = 0;
     	Scanner in = new Scanner(System.in);
     	//trying to connect the driver 
     	try (MongoClient mongoClient = MongoClients.create(connectionString)) {
@@ -60,8 +68,9 @@ public class Main extends Application {
     			//finding the database and collection
                 db = mongoClient.getDatabase("Effortlogs");
                 col = db.getCollection("logs");
-                //update("log-num", "15", 7, col);
-                //printLogs(findAll("user", "eyenriqu", db));
+                
+                //initializes the indexes necessary for phrase searching
+            	searchInit(db);
                 
                 System.out.println("Welcome to the EffortLogger V2 Prototype!\n");
                 //Main EffortLogger Loop (FOR NOW)
@@ -74,11 +83,29 @@ public class Main extends Application {
                 	System.out.println("4 = Search for a Story or Log");
                 	System.out.println("5 = Print all Stories or Logs\n");
                 	
-                	action = in.nextInt();
-                	while (action < 1 || action > 5)
+                	
+                	Boolean confirm = false;
+                	
+                	while (!confirm)
                 	{
-                		System.out.println("Your input is invalid, please choose a number from the above list");
-                		action = in.nextInt();
+                		try
+                		{
+                			action = in.nextInt();
+                			if (action > 0 && action < 6)
+                			{
+                				confirm = true;
+                			}
+                			else
+                			{
+                				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                			}
+                			
+                		}
+                		catch (InputMismatchException e)
+                		{
+                			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                			in.nextLine();
+                		}
                 	}
                 	//vars necessary for decision-making
                 	String slChoice;
@@ -87,7 +114,7 @@ public class Main extends Application {
                 	
                 	switch (action)
                 	{
-                		case 1:
+                		case 1: //INSERT
                 			System.out.println("adding a story or log!");
                 			
                 			System.out.println("Would you like to add a story or log? Enter (S/L)\n");
@@ -118,18 +145,381 @@ public class Main extends Application {
 
                 			
                 			break;
-                		case 2:
+                		case 2: //EDIT
                 			System.out.println("editing a story or log!");
+                			System.out.println("Would you like to edit a story or log? Enter (S/L)\n");
+                			slChoice = in.next().toLowerCase();
+                			while (!slChoice.equals("s") && !slChoice.equals("l"))
+                        	{
+                        		System.out.println("Your input is invalid, please enter S/L");
+                        		slChoice = in.next().toLowerCase();
+                        	}
                 			
+                			String param = "";
+                			if (slChoice.equals("s"))
+                			{
+                				slChoice = "stories";
+                				param = "story-id";
+                			}
+                			else if (slChoice.equals("l"))
+                			{
+                				slChoice = "logs";
+                				param = "log-id";
+                			}
+                			System.out.println("Please enter the id number of the entry you would like to edit:");
+                			int idNum = 0;
+                			confirm = false;
+                        	while (!confirm)
+                        	{
+                        		try
+                        		{
+                        			idNum = in.nextInt();
+                        			if (idNum > 0)
+                        			{
+                        				confirm = true;
+                        			}
+                        			else
+                        			{
+                        				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                        			}
+                        			
+                        		}
+                        		catch (InputMismatchException e)
+                        		{
+                        			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                        			in.nextLine();
+                        		}
+                        	}
+                        	System.out.println("Now printing the current requested entry\n");
+                        	FindIterable<Document> iterable = numSearch(slChoice, param, idNum, db);
+                        	if (iterable.first() != null)
+                        	{
+                        		print(iterable);
+                        		
+                        		if (slChoice.equals("logs"))
+                        		{
+                        			System.out.println("Starting editing process for logs");
+                        			System.out.println("What key would you like to change?");
+                        			System.out.println("For project-id, enter P");
+                        			System.out.println("For story-id, enter S");
+                        			System.out.println("For details, enter D");
+                					confirm = false;
+                					String editChoice = in.next().toLowerCase();
+                					while (!confirm)
+                					{
+                						switch (editChoice)
+                						{
+                    						case "p":
+                    							editChoice = "project-id";
+                    							confirm = true;
+                    							break;
+                    							
+                    						case "s":
+                    							editChoice = "story-id";
+                    							confirm = true;
+                    							break;
+                    							
+                    						case "d":
+                    							editChoice = "details";
+                    							confirm = true;
+                    							break;
+                    					
+                							
+                							default:
+                								System.out.println("Your input is invalid, please enter P/S/D");
+                                        		editChoice = in.next().toLowerCase();
+                								break;
+                						}
+                					}
+                					int updatedNum = 0;
+                					String updatedPhrase = null;
+                					if (editChoice.equals("details"))
+                					{
+                						in.nextLine();
+                						System.out.println("Please enter the new details you would like this log to have");
+                						updatedPhrase = in.nextLine();
+                					}
+                					else
+                					{
+                						System.out.println("Please enter the new " + editChoice + " you would like this log to have");
+                            			confirm = false;
+                                    	while (!confirm)
+                                    	{
+                                    		try
+                                    		{
+                                    			updatedNum = in.nextInt();
+                                    			if (updatedNum > 0)
+                                    			{
+                                    				confirm = true;
+                                    			}
+                                    			else
+                                    			{
+                                    				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                                    			}
+                                    			
+                                    		}
+                                    		catch (InputMismatchException e)
+                                    		{
+                                    			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                                    			in.nextLine();
+                                    		}
+                                    	}
+                					}
+                					update(slChoice, editChoice, param, idNum, updatedPhrase, updatedNum, db);
+                					System.out.println("Now printing your updated entry");
+                					print(numSearch(slChoice, param, idNum, db));
+                					
+                        		}
+                        		else
+                        		{
+                        			System.out.println("Starting editing process for stories");
+                        			System.out.println("What key would you like to change?");
+                        			System.out.println("For project-id, enter P");
+                        			System.out.println("For title, enter T");
+                        			System.out.println("For details, enter D");
+                        			
+                					confirm = false;
+                					String editChoice = in.next().toLowerCase();
+                					while (!confirm)
+                					{
+                						switch (editChoice)
+                						{
+                    						case "p":
+                    							editChoice = "project-id";
+                    							confirm = true;
+                    							break;
+                    							
+                    						case "t":
+                    							editChoice = "title";
+                    							confirm = true;
+                    							break;
+                    							
+                    						case "d":
+                    							editChoice = "details";
+                    							confirm = true;
+                    							break;
+                    					
+                							
+                							default:
+                								System.out.println("Your input is invalid, please enter P/T/D");
+                                        		editChoice = in.next().toLowerCase();
+                								break;
+                						}
+                					}
+                					int updatedNum = 0;
+                					String updatedPhrase = null;
+                					if (editChoice.equals("details") || editChoice.equals("title"))
+                					{
+                						in.nextLine();
+                						System.out.println("Please enter the new " + editChoice + " you would like this log to have");
+                						updatedPhrase = in.nextLine();
+                					}
+                					else
+                					{
+                						System.out.println("Please enter the new " + editChoice + " you would like this log to have");
+                            			confirm = false;
+                                    	while (!confirm)
+                                    	{
+                                    		try
+                                    		{
+                                    			updatedNum = in.nextInt();
+                                    			if (updatedNum > 0)
+                                    			{
+                                    				confirm = true;
+                                    			}
+                                    			else
+                                    			{
+                                    				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                                    			}
+                                    			
+                                    		}
+                                    		catch (InputMismatchException e)
+                                    		{
+                                    			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                                    			in.nextLine();
+                                    		}
+                                    	}
+                					}
+                					update(slChoice, editChoice, param, idNum, updatedPhrase, updatedNum, db);
+                					System.out.println("Now printing your updated entry");
+                					print(numSearch(slChoice, param, idNum, db));
+                        		}
+                        	}
                 			break;
-                		case 3:
+                		case 3: //DELETE
                 			System.out.println("deleting a story or log!");
+                			System.out.println("Would you like to delete a story or log? Enter (S/L)\n");
+                			slChoice = in.next().toLowerCase();
+                			while (!slChoice.equals("s") && !slChoice.equals("l"))
+                        	{
+                        		System.out.println("Your input is invalid, please enter S/L");
+                        		slChoice = in.next().toLowerCase();
+                        	}
+                			
+                			param = "";
+                			if (slChoice.equals("s"))
+                			{
+                				slChoice = "stories";
+                				param = "story-id";
+                			}
+                			else if (slChoice.equals("l"))
+                			{
+                				slChoice = "logs";
+                				param = "log-id";
+                			}
+                			
+                			System.out.println("Please enter the id number of the entry you would like to remove:");
+                			idNum = 0;
+                			confirm = false;
+                        	while (!confirm)
+                        	{
+                        		try
+                        		{
+                        			idNum = in.nextInt();
+                        			if (idNum > 0)
+                        			{
+                        				confirm = true;
+                        			}
+                        			else
+                        			{
+                        				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                        			}
+                        			
+                        		}
+                        		catch (InputMismatchException e)
+                        		{
+                        			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                        			in.nextLine();
+                        		}
+                        	}
+                        	deleteEntry(idNum, slChoice, param, db);
                 			break;
-                		case 4:
+                		case 4: //SEARCH
                 			System.out.println("searching for a story or log!");
+                			System.out.println("Would you like to search for a story or log? Enter (S/L)\n");
+                			slChoice = in.next().toLowerCase();
+                			while (!slChoice.equals("s") && !slChoice.equals("l"))
+                        	{
+                        		System.out.println("Your input is invalid, please enter S/L");
+                        		slChoice = in.next().toLowerCase();
+                        	}
+                			
+                			if (slChoice.equals("s"))
+                				slChoice = "stories";
+                			else if (slChoice.equals("l"))
+                				slChoice = "logs";
+                			
+                			System.out.println("Would you like to search by a number or a phrase? Enter (N/P)");
+                			String npChoice = in.next().toLowerCase();
+                			while (!npChoice.equals("n") && !npChoice.equals("p"))
+                			{
+                				System.out.println("Your input is invalid, please enter N/P");
+                        		npChoice = in.next().toLowerCase();
+                			}
+                			if (npChoice.equals("n"))
+                			{
+            					System.out.println("Would you like to search by user, project, story, or log id? Enter (U/P/S/L)");
+            					System.out.println("Disclaimer: you may not search by log-id if you are searching the story collection");
+            					String idChoice = in.next().toLowerCase();
+            					/*while (!idChoice.equals("u") && !idChoice.equals("p") && !idChoice.equals("s"))
+                    			{
+                    				System.out.println("Your input is invalid, please enter N/P");
+                            		idChoice = in.next().toLowerCase();
+                    			}*/
+            					param = "";
+            					confirm = false;
+            					while (!confirm)
+            					{
+            						switch (idChoice)
+            						{
+                						case "u":
+                							param = "user-id";
+                							confirm = true;
+                							break;
+                						
+                						case "p":
+                							param = "project-id";
+                							confirm = true;
+                							break;
+                							
+                						case "s":
+                							param = "story-id";
+                							confirm = true;
+                							break;
+                						
+                						case "l":
+                							if (slChoice.equals("stories"))
+                							{
+                								System.out.println("The log-id parameter does not exist in the story collection. Please select another");
+                								idChoice = in.next().toLowerCase();
+                							}
+                							else
+                							{
+                								param = "log-id";
+                								confirm = true;
+                							}
+                							break;
+            							
+            							default:
+            								System.out.println("Your input is invalid, please enter N/P");
+                                    		idChoice = in.next().toLowerCase();
+            								break;
+            						}
+            					}
+            					
+            					System.out.println("Please enter the id number of the entry you would like to search for:");
+                    			idNum = 0;
+                    			confirm = false;
+                            	while (!confirm)
+                            	{
+                            		try
+                            		{
+                            			idNum = in.nextInt();
+                            			if (idNum > 0)
+                            			{
+                            				confirm = true;
+                            			}
+                            			else
+                            			{
+                            				System.out.println("Your input is out of bounds, please enter a number from the above list:\n");
+                            			}
+                            			
+                            		}
+                            		catch (InputMismatchException e)
+                            		{
+                            			System.out.println("The input must be an integer, please enter a number from the above list:\n");
+                            			in.nextLine();
+                            		}
+                            	}
+            					print(numSearch(slChoice, param, idNum, db));
+                			}
+                			else
+                			{
+                				System.out.println("Please enter the phrases you would like to search for");
+                				in.nextLine();
+                				String phrase = in.nextLine();
+                				print(phraseSearch(slChoice, phrase, db));
+                			}
                 			break;
                 		case 5:
                 			System.out.println("printing all story or log!");
+                			
+                			System.out.println("Would you like to print all stories or logs? Enter (S/L)\n");
+                			slChoice = in.next().toLowerCase();
+                			while (!slChoice.equals("s") && !slChoice.equals("l"))
+                        	{
+                        		System.out.println("Your input is invalid, please enter S/L");
+                        		slChoice = in.next().toLowerCase();
+                        	}
+                			
+                			if (slChoice.equals("s"))
+                				slChoice = "stories";
+                			else if (slChoice.equals("l"))
+                				slChoice = "logs";
+
+                			System.out.println("Now printing all entries from " + slChoice + " collection:\n");
+                			printCol(slChoice, db);
+                			
                 			break;
                 	}
                 	
@@ -141,12 +531,31 @@ public class Main extends Application {
                 		continueChoice = in.next().toLowerCase();
                 	}
                 }
+                in.close();
                 
             } catch (MongoException e) {
                 e.printStackTrace();
             }
         }
     	
+    }
+    
+    //necessary function for making certain tags searchable by phrase
+    //if you want to add more tags that store strings, add them to this so they can be properly searched
+    public void searchInit(MongoDatabase db)
+    {
+    	MongoCollection<Document> logs = db.getCollection("logs");
+    	MongoCollection<Document> stories = db.getCollection("stories");
+    	Document test = new Document().append("details", 1);
+    	logs.createIndex(test);
+    	//stories.createIndex(Indexes.text("title"));
+    	//stories.dropIndex("details_1_title_1");
+    	//test = new Document().append("details", 1);
+    	/*MongoCursor<Document> results = stories.listIndexes().iterator();
+    	while (results.hasNext())
+    	{
+    		System.out.println(results.next());
+    	}*/
     }
     
     //insert into logs collection in database we have to manually pass the db feel free to add more tags
@@ -174,11 +583,11 @@ public class Main extends Application {
     	MongoCollection<Document> col = db.getCollection("stories"); 
     	//return a newId based on the last id in the collection
     	int storyId = newId("stories", "story-id", db);
-        Document test = new Document("user",userId)
+        Document test = new Document("user-id",userId)
         		.append("project-id", projectId)
         		.append("story-id", storyId)
         		.append("title", title)
-        		.append("description", description)
+        		.append("details", description)
         		.append("TimeStamp", new java.util.Date());
         col.insertOne(test);
         System.out.println("Story successfully added");
@@ -189,17 +598,42 @@ public class Main extends Application {
     //data would = AJ
     //pass the database from the start method
     //returns an iterable that has all the documents found
-    public FindIterable<Document> findAll(String filter, String data, MongoDatabase db)
+    public FindIterable<Document> numSearch(String colName, String filter, int data, MongoDatabase db)
     {
-    	MongoCollection<Document> col = db.getCollection("logs");
+    	MongoCollection<Document> col = db.getCollection(colName);
     	FindIterable<Document> iterable;
-    	if(filter.equals("security-level")) {
-    		iterable = col.find(eq(filter, Integer.parseInt(data)));
-    	}
-    	else {
-    		iterable = col.find(eq(filter, data));
+    	iterable = col.find(eq(filter, data));
+    	if (iterable.first() == null)
+    	{
+    		System.out.println("The log(s) you are searching for doesn't exist");
     	}
     	return iterable;
+    }
+    
+    public FindIterable<Document> phraseSearch(String colName, String phrase, MongoDatabase db)
+    {
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	FindIterable<Document> iterable;
+    	Bson filter = Filters.text(phrase);
+    	iterable = col.find(filter);
+    	if (iterable.first() == null)
+    	{
+    		System.out.println("The log(s) you are searching for doesn't exist");
+    	}
+    	return iterable;
+    }
+    
+    public void printCol(String colName, MongoDatabase db)
+    {
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	FindIterable<Document> iterable = col.find();
+    	MongoCursor<Document> results = iterable.iterator();
+    	while(results.hasNext())
+        {
+        	System.out.println(results.next().toJson());
+       
+        }
+    	return;
     }
     
     //method finding the last of a certain collection
@@ -223,31 +657,40 @@ public class Main extends Application {
     
     
     //print all logs that where found and stored in an iterable
-    public void printLogs(FindIterable<Document> iterable) {
+    public void print(FindIterable<Document> iterable) {
     	MongoCursor<Document> results = iterable.iterator();
         while(results.hasNext())
         {
         	System.out.println(results.next().toJson());
-       
         }
     }
     
     //finds the log we want to delete by log number then deletes it
-    public void deleteLog(long logNum, MongoCollection<Document> col){
-    	col.deleteOne(eq("log-num", logNum));
-    	System.out.println("Deleted Document in DB");
+    public void deleteEntry(int num, String colName, String param, MongoDatabase db){
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	Document deleted = col.findOneAndDelete(eq(param, num));
+    	if (deleted == null)
+    	{
+    		System.out.println("There was no entry found matching that id - nothing deleted");
+    	}
+    	else
+    	{
+    		System.out.println("The following Document was deleted from " + colName);
+    		System.out.println(deleted.toJson());
+    	}
     }
     
     //finds log by log number then sets attribute you decided in update string with data 
-    public void update(String update, String data,long logNum,MongoCollection<Document> col) {
-    	if(update.equals("log-num") || update.equals("security-level"))
+    public void update(String colName, String param, String idParam, int idNum, String updatedPhrase, int updatedNum, MongoDatabase db) {
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	if(updatedPhrase == null)
     	{
-    		col.findOneAndUpdate(eq("log-num", logNum), set(update, Integer.parseInt(data)));
+    		col.findOneAndUpdate(eq(idParam, idNum), set(param, updatedNum));
     	}
     	else {
-    		col.findOneAndUpdate(eq("log-num", logNum), set(update, data));
+    		col.findOneAndUpdate(eq(idParam, idNum), set(param, updatedPhrase));
     	}
-    	System.out.println("Updated Document in DB");
+    	System.out.println("We do a little updating");
     }
     
 }
