@@ -38,79 +38,84 @@ import java.security.NoSuchAlgorithmException;
 
 public class Login{
 	
-	private UUID userID;
-	private int userInt, securityLevel;
-	private String username, password;
 	
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 	private static final String ALGORITHM = "AES";
 	
 	
-	
-	public void createUser(String username, String password, int securityLevel)
-	{
-		userID = UUID.randomUUID();
-		userInt = Integer.parseInt(userID.toString());	
-		
-		this.securityLevel = securityLevel;
-		this.username = username;
-		this.password = password;
-		
-	}
-	
 	// gathers information about the user such as username, password, etc. and pushes it to the database
-	public void addUser(MongoDatabase db, MongoClient mongoClient)
+	public void addUser(String username, String password, int securityLevel, MongoDatabase db)
 	{
-			// initialize collection
-	    	MongoCollection<Document> col = db.getCollection("users");
-	    	// create new initial user with dummy password and insert it into database
-	    	Document newUser = new Document("user", username)
-	    			.append("password", "")
-	    			.append("userID", userInt)
-	    			.append("security-level", securityLevel);
-	    	col.insertOne(newUser);
-	    	
-	    	// create secret string through the newly inserted user's database objectID
-	    	String secret = newUser.getObjectId(newUser).toHexString();
-	    	// create filter document that finds the dummy newUser
-	    	Document filter = new Document("userID", userInt);
-	    	// Update object that contains new encrypted password
-	    	Bson updates = Updates.combine(Updates.set("password", encrypt(password, secret)));
-	    	// UpdateOptions for inserting object to reduce risk
-	    	UpdateOptions options = new UpdateOptions().upsert(true);
-	    	
-	    	// update database. if failure, print error
-	    	try
-	    	{
-	    		col.updateOne(filter, updates, options);
-	    		System.out.println("Inserted User");
-	    	}
-	    	catch (MongoException e)
-	    	{
-	    		System.out.println("Insertion Error: " + e);
-	    	}
+		String addUsername = username;
+		String addPassword = password;
+		int addSecurityLevel = securityLevel;
+		
+		
+		System.out.println("in createUser");
+		UUID userID = UUID.randomUUID();
+		System.out.println("made UUID");
+		long userInt = Long.parseLong(Math.abs(userID.getLeastSignificantBits()) + "");	
+		System.out.println("parsed the int:       " + userInt);
+		
+
+		// initialize collection
+    	MongoCollection<Document> col = db.getCollection("users");
+    	System.out.println("Created col");
+    	// create new initial user with dummy password and insert it into database
+    	Document newUser = new Document("username", addUsername)
+    			.append("password", "")
+    			.append("userID", userInt)
+    			.append("securityLevel", addSecurityLevel);
+    	System.out.println("Created document user");
+    	col.insertOne(newUser);
+    	System.out.println("inserted new user");
+    	// create secret string through the newly inserted user's database objectID
+    	String secret = newUser.getObjectId(newUser) + "";
+    	System.out.println("generated secret");
+    	// create filter document that finds the dummy newUser
+    	Document filter = new Document("userID", userInt);
+    	System.out.println("created filterr");
+    	// Update object that contains new encrypted password
+    	Bson updates = Updates.combine(Updates.set("password", encrypt(addPassword, secret)));
+    	System.out.println("created updates BSON with succesfully encrypted");
+    	// UpdateOptions for inserting object to reduce risk
+    	UpdateOptions options = new UpdateOptions().upsert(true);
+    	
+    	// update database. if failure, print error
+    	try
+    	{
+    		col.updateOne(filter, updates, options);
+    		System.out.println("Inserted User");
+    	}
+    	catch (MongoException e)
+    	{
+    		System.out.println("Insertion Error: " + e);
+    	}
 	
 	}
 	
 	// searches for user in database. If parameters match, return true. Else return false
 	public boolean findUser(String username, String password, MongoDatabase db)
 	{
-		MongoCollection<Document> col = db.getCollection("users");
 		
+		
+		MongoCollection<Document> col = db.getCollection("users");
 		// find user name in database
 		FindIterable<Document> filterUsers = col.find(eq("username", username));
-		MongoCursor<Document> iterable = filterUsers.iterator();
-		Document targetObject = iterable.next();
+		Document targetObject = filterUsers.first();
+		if(targetObject == null)
+			return false;
 		// use user name to get object's database id
-		String secret = targetObject.getObjectId(targetObject).toHexString();
+		String secret = targetObject.getObjectId(targetObject) + "";
 		// find password in database
 		String dbPassword = targetObject.get("password").toString();
 		// check given password against database password decrypted with key
 		String encryptedPass = encrypt(password, secret);
-		if (encryptedPass.equals((dbPassword)))
+		//System.out.println(encryptedPass);
+		if (encryptedPass.equals((dbPassword)) && targetObject.getString("username").toString().equals(username))
 		{
-			System.out.println("User found and logged in succesfully");
+			//System.out.println("User found and logged in succesfully");
 			return true;
 		}
 		return false;
@@ -125,7 +130,19 @@ public class Login{
 			MongoCollection<Document> col = db.getCollection("users");
 			FindIterable<Document> iterable = col.find();
 			MongoCursor<Document> results = iterable.iterator();
-			System.out.println(results.next().toString());
+			Document targetObject = results.next();
+			while(results.hasNext())
+			{
+				System.out.println(targetObject.toString());
+				String secret = targetObject.getObjectId(targetObject) + "";
+				String decryptedPass = decrypt(targetObject.getString("password"), secret);
+				System.out.println("Decrypted Password: " + decryptedPass);
+				targetObject = results.next();
+			}
+			System.out.println("\n" + targetObject.toString());
+			String secret = targetObject.getObjectId(targetObject) + "";
+			String decryptedPass = decrypt(targetObject.getString("password"), secret);
+			System.out.println("Decrypted Password: " + decryptedPass);
 		}
 		catch (MongoException e)
 		{
@@ -134,8 +151,9 @@ public class Login{
 	}
 	
 	// deletes user from database by providing userID and password????
-	public void deleteUser(int userId, MongoCollection<Document> col)
+	public void deleteUser(int userId, MongoDatabase db)
 	{
+		MongoCollection<Document> col = db.getCollection("users");
 		col.deleteOne(eq("userID", userId));
 		System.out.println("Deleted a user in database");
 	}
@@ -149,22 +167,23 @@ public class Login{
 		
 		MongoCollection<Document> col = db.getCollection("users");
 		// check if any inputs would already belong to an existing user
-		Document checkUserFilter = new Document("username", newUsername);
-		Document checkIdFilter = new Document("userID", newUserId);
-		if (col.find(checkIdFilter) != null)
+		System.out.println("Created check filters");
+		if (col.find(eq("username", newUsername)).first() != null)
 			return false;
-		if (col.find(checkUserFilter) != null)
+		System.out.println("Cleared checkID");
+		if (col.find(eq("userID", newUserId)).first() != null)
 			return false;
 
+		System.out.println("Made past id filter checks and username checks");
 		// find user name in database
 		FindIterable<Document> filterUsers = col.find(eq("username", username));
 		MongoCursor<Document> iterable = filterUsers.iterator();
 		Document targetObject = iterable.next();
 		
 		// create secret string through the newly inserted user's database objectID
-    	String secret = targetObject.getObjectId(targetObject).toHexString();
+    	String secret = targetObject.getObjectId(targetObject) + "";
     	// create filter document that finds the dummy newUser
-    	Document filter = new Document("userID", userInt);
+    	Document filter = new Document("username", username);
     	// Update object that contains new encrypted password
     	Bson updates = Updates.combine(
     			Updates.set("username", newUsername), 
@@ -181,6 +200,7 @@ public class Login{
     	{
     		col.updateOne(filter, updates, options);
     		System.out.println("Inserted User");
+    		return true;
     	}
     	catch (MongoException e)
     	{

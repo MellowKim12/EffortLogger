@@ -42,7 +42,11 @@ import static com.mongodb.client.model.Sorts.descending;
  * Focus: Input Validation
  */
 
+
 public class Main extends Application {
+	
+	private boolean authorize = false;
+	
 	
     public static void main(String[] args) {
         launch(args);
@@ -54,11 +58,15 @@ public class Main extends Application {
     	MongoDatabase db;
     	MongoCollection<Document> col;
     	
+    	
+    	Login loginSystems = new Login();
+    	
+    	
     	//basic user stuff that James/Cole can link to login credentials later on
     	String currentUser = "Hugh Mungus";
     	int userId = 420;
     	int userSecurity = 1;
-    	
+  
     	int project = 1;
     	
     	
@@ -79,6 +87,22 @@ public class Main extends Application {
             	searchInit(db);
                 
                 System.out.println("Welcome to the EffortLogger V2 Prototype!\n");
+                
+                // login system
+                while (!authorize)
+                {
+	                // login systems
+	                System.out.println("Please enter your user credentials:" + "\n" + "Username:");
+	                String username = in.nextLine();
+	                System.out.println("Password: ");
+	                String password = in.nextLine();
+	                
+	                if (loginSystems.findUser(username, password, db))
+	                	authorize = true;
+	                else
+	                	System.out.println("Username or Password did not match. Try again");
+                }
+                
                 //Main EffortLogger Loop (FOR NOW)
                 while (continueChoice.equals("y"))
                 {
@@ -88,8 +112,11 @@ public class Main extends Application {
                 	System.out.println("2 = Edit an Existing Story or Log");
                 	System.out.println("3 = Delete an Existing Story or Log");
                 	System.out.println("4 = Search for a Story or Log");
-                	System.out.println("5 = Print all Stories or Logs\n");
-                	
+                	System.out.println("5 = Print all Stories or Logs");
+                	System.out.println("6 = Create a New User");
+                	System.out.println("7 = Delete a User");
+                	System.out.println("8 = Update an Existing User");
+                	System.out.println("9 = Print all Users");
                 	
                 	Boolean confirm = false;
                 	//verifying that an integer is entered that matches one of the 5 choices outlined above
@@ -98,7 +125,7 @@ public class Main extends Application {
                 		try
                 		{
                 			action = in.nextInt();
-                			if (action > 0 && action < 6)
+                			if (action > 0 && action < 10)
                 			{
                 				confirm = true;
                 			}
@@ -548,7 +575,101 @@ public class Main extends Application {
                 			printCol(slChoice, db);
                 			
                 			break;
-                	}
+                		
+                		// adding new user
+                		case 6:
+                			System.out.println("Please fill out required prompts to add a new user\n");
+                			System.out.println("Please enter a username\n");
+                			String username = in.nextLine();
+                			while (username.equals(""))
+                			{
+                				System.out.println("Invalid username. Username cannot be blank. Please re-enter\n");
+                				username = in.nextLine();
+                			}
+                			System.out.println("Please enter a password\n");
+                			String password = in.nextLine();
+                			while (password.equals(""))
+                			{
+                				System.out.println("Invalid password. Password cannot be blank. Please re-enter\n");
+                				password = in.nextLine();
+                			}
+                			System.out.println("Please enter a security level\n");
+                			int securityLevel = in.nextInt();
+                			while (securityLevel < 0 || securityLevel > 4)
+                			{
+                				System.out.println("Invalid Security Level. Security level must be an integer between 0 and 4 inclusive\n");
+                				securityLevel = in.nextInt();
+                			}
+                			
+                			loginSystems.addUser(username, password, securityLevel, db);
+                			
+                			break;
+                			
+                		case 7:
+                			System.out.println("Please enter a userID to delete the user: \n");
+                			
+                			int deleteID = in.nextInt();
+                			
+                			loginSystems.deleteUser(deleteID, db);
+                			break;
+                			
+                		case 8:
+                			System.out.println("Please enter a username: \n");
+                			String findUsername = in.nextLine();
+                			while (findUsername.equals(""))
+                			{
+                				System.out.println("Username cannot be empty. Please reenter username: \n");
+                				findUsername = in.nextLine();
+                			}
+                			System.out.println("Please enter a password: \n");
+                			String findPassword = in.nextLine();
+                			while (findPassword.equals(""))
+                			{
+                				System.out.println("Password cannot be empty. Please reenter password: \n");
+                				findPassword = in.nextLine();
+                			}
+                			
+                			System.out.println("Please enter a new username: \n");
+                			String newUsername = in.nextLine();
+                			while (newUsername.equals(""))
+                			{
+                				System.out.println("Username cannot be empty. Please reenter username: \n");
+                				newUsername = in.nextLine();
+                			}
+                			System.out.println("Please enter a password: \n");
+                			String newPassword = in.nextLine();
+                			while (newPassword.equals(""))
+                			{
+                				System.out.println("Password cannot be empty. Please reenter password: \n");
+                				newPassword = in.nextLine();
+                			}
+                			System.out.println("Please enter a userID: \n");
+                			int newUserId = in.nextInt();
+                			
+                			System.out.println("Please enter a security level: \n");
+                			int newSecurityLevel = in.nextInt();
+                			while (newSecurityLevel < 0 || newSecurityLevel > 4)
+                			{
+                				System.out.println("Invalid Security Level. Security level must be an integer between 0 and 4 inclusive: \n");
+                				newSecurityLevel = in.nextInt();
+                			}
+                			
+                			boolean updated = loginSystems.updateUser(findUsername, findPassword, newUsername, newPassword, newUserId, newSecurityLevel, db);
+                			
+                			if (updated)
+                				System.out.println("User succesfully updated\n");
+                			else
+                				System.out.println("User not updated. Please recheck data entries and ensure this user exists already\n");
+                			break;
+                			
+                		// print all users in database
+                		case 9:
+                			System.out.println("Now printing all users in database");
+                			loginSystems.printUsers(db);
+                			break;
+                			
+                			
+                	} // end of switch
                 	
                 	System.out.println("Would you like to continue using EffortLogger V2? (Y/N)");
                 	continueChoice = in.next().toLowerCase();
