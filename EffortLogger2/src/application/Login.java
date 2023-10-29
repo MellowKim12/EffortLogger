@@ -1,5 +1,6 @@
 package application;
 
+// designed by James Kim
 import java.util.UUID;
 
 
@@ -47,38 +48,30 @@ public class Login{
 	// gathers information about the user such as username, password, etc. and pushes it to the database
 	public void addUser(String username, String password, int securityLevel, MongoDatabase db)
 	{
+		// variable acquisition
+		
 		String addUsername = username;
 		String addPassword = password;
 		int addSecurityLevel = securityLevel;
 		
-		
-		System.out.println("in createUser");
+		// userID creation
 		UUID userID = UUID.randomUUID();
-		System.out.println("made UUID");
 		long userInt = Long.parseLong(Math.abs(userID.getLeastSignificantBits()) + "");	
-		System.out.println("parsed the int:       " + userInt);
-		
 
 		// initialize collection
     	MongoCollection<Document> col = db.getCollection("users");
-    	System.out.println("Created col");
     	// create new initial user with dummy password and insert it into database
     	Document newUser = new Document("username", addUsername)
     			.append("password", "")
     			.append("userID", userInt)
     			.append("securityLevel", addSecurityLevel);
-    	System.out.println("Created document user");
     	col.insertOne(newUser);
-    	System.out.println("inserted new user");
     	// create secret string through the newly inserted user's database objectID
     	String secret = newUser.getObjectId(newUser) + "";
-    	System.out.println("generated secret");
     	// create filter document that finds the dummy newUser
     	Document filter = new Document("userID", userInt);
-    	System.out.println("created filterr");
     	// Update object that contains new encrypted password
     	Bson updates = Updates.combine(Updates.set("password", encrypt(addPassword, secret)));
-    	System.out.println("created updates BSON with succesfully encrypted");
     	// UpdateOptions for inserting object to reduce risk
     	UpdateOptions options = new UpdateOptions().upsert(true);
     	
@@ -98,8 +91,6 @@ public class Login{
 	// searches for user in database. If parameters match, return true. Else return false
 	public boolean findUser(String username, String password, MongoDatabase db)
 	{
-		
-		
 		MongoCollection<Document> col = db.getCollection("users");
 		// find user name in database
 		FindIterable<Document> filterUsers = col.find(eq("username", username));
