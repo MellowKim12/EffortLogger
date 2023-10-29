@@ -36,6 +36,12 @@ import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Sorts.descending;
 
 
+/*
+ * EffortLogger V2 Risk Reduction Prototype
+ * Written by: Noah Lovelace
+ * Focus: Input Validation
+ */
+
 public class Main extends Application {
 	
     public static void main(String[] args) {
@@ -76,6 +82,7 @@ public class Main extends Application {
                 //Main EffortLogger Loop (FOR NOW)
                 while (continueChoice.equals("y"))
                 {
+                	//output all options for database manipulation
                 	System.out.println("Please select an action from the following list:\n");
                 	System.out.println("1 = Add a Story or Log");
                 	System.out.println("2 = Edit an Existing Story or Log");
@@ -85,7 +92,7 @@ public class Main extends Application {
                 	
                 	
                 	Boolean confirm = false;
-                	
+                	//verifying that an integer is entered that matches one of the 5 choices outlined above
                 	while (!confirm)
                 	{
                 		try
@@ -112,6 +119,9 @@ public class Main extends Application {
                 	String title;
                 	String details;
                 	
+                	//This switch statement handles the 5 different options for db manipulation
+                	//Each starts with a branching pathway to manipulate either the story or log collections
+                	//The following instructions vary between pathways
                 	switch (action)
                 	{
                 		case 1: //INSERT
@@ -119,6 +129,7 @@ public class Main extends Application {
                 			
                 			System.out.println("Would you like to add a story or log? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
+                			//input validation for s/l choice
                 			while (!slChoice.equals("s") && !slChoice.equals("l"))
                         	{
                         		System.out.println("Your input is invalid, please enter S/L");
@@ -132,6 +143,7 @@ public class Main extends Application {
                 				title = in.nextLine();
                 				System.out.println("What description would you like to add to the story?\n");
                 				details = in.nextLine();
+                				//calls to the insertStory function to actually add to the database
                 				insertStory(userId, project, title, details, db);
                 			}
                 			else //if (slChoice.equals("l"))
@@ -140,6 +152,7 @@ public class Main extends Application {
                 				in.nextLine();
                 				System.out.println("What details would you like to add to the log?\n");
                 				details = in.nextLine();
+                				//calls to the insertLog function to add to the db
                 				insertLog(userId, project, 1, details, db);
                 			}
 
@@ -149,6 +162,7 @@ public class Main extends Application {
                 			System.out.println("editing a story or log!");
                 			System.out.println("Would you like to edit a story or log? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
+                			//input validation for story/log case
                 			while (!slChoice.equals("s") && !slChoice.equals("l"))
                         	{
                         		System.out.println("Your input is invalid, please enter S/L");
@@ -166,6 +180,7 @@ public class Main extends Application {
                 				slChoice = "logs";
                 				param = "log-id";
                 			}
+                			//input validation for idNum entered, must be an integer and must be in bounds
                 			System.out.println("Please enter the id number of the entry you would like to edit:");
                 			int idNum = 0;
                 			confirm = false;
@@ -190,8 +205,10 @@ public class Main extends Application {
                         			in.nextLine();
                         		}
                         	}
+                        	//Searching for the requested entry
                         	System.out.println("Now printing the current requested entry\n");
                         	FindIterable<Document> iterable = numSearch(slChoice, param, idNum, db);
+                        	//Continues on if the entry is found, otherwise boots back to the main loop
                         	if (iterable.first() != null)
                         	{
                         		print(iterable);
@@ -205,6 +222,7 @@ public class Main extends Application {
                         			System.out.println("For details, enter D");
                 					confirm = false;
                 					String editChoice = in.next().toLowerCase();
+                					//input validation for this choice
                 					while (!confirm)
                 					{
                 						switch (editChoice)
@@ -233,6 +251,7 @@ public class Main extends Application {
                 					}
                 					int updatedNum = 0;
                 					String updatedPhrase = null;
+                					//branching paths for numerical values vs. String
                 					if (editChoice.equals("details"))
                 					{
                 						in.nextLine();
@@ -243,6 +262,7 @@ public class Main extends Application {
                 					{
                 						System.out.println("Please enter the new " + editChoice + " you would like this log to have");
                             			confirm = false;
+                            			//input validation for the updatedNumber
                                     	while (!confirm)
                                     	{
                                     		try
@@ -265,6 +285,7 @@ public class Main extends Application {
                                     		}
                                     	}
                 					}
+                					//Update function called once all inputs have been verified
                 					update(slChoice, editChoice, param, idNum, updatedPhrase, updatedNum, db);
                 					System.out.println("Now printing your updated entry");
                 					print(numSearch(slChoice, param, idNum, db));
@@ -272,6 +293,7 @@ public class Main extends Application {
                         		}
                         		else
                         		{
+                        			//The story editing process is largely the same, with some varying choices based on the values present in each story object
                         			System.out.println("Starting editing process for stories");
                         			System.out.println("What key would you like to change?");
                         			System.out.println("For project-id, enter P");
@@ -340,6 +362,7 @@ public class Main extends Application {
                                     		}
                                     	}
                 					}
+                					//calls update on the story entry specified once all inputs have been validated
                 					update(slChoice, editChoice, param, idNum, updatedPhrase, updatedNum, db);
                 					System.out.println("Now printing your updated entry");
                 					print(numSearch(slChoice, param, idNum, db));
@@ -350,6 +373,7 @@ public class Main extends Application {
                 			System.out.println("deleting a story or log!");
                 			System.out.println("Would you like to delete a story or log? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
+                			//input validation on story/log choice
                 			while (!slChoice.equals("s") && !slChoice.equals("l"))
                         	{
                         		System.out.println("Your input is invalid, please enter S/L");
@@ -370,6 +394,7 @@ public class Main extends Application {
                 			
                 			System.out.println("Please enter the id number of the entry you would like to remove:");
                 			idNum = 0;
+                			//input validation on the id number entry
                 			confirm = false;
                         	while (!confirm)
                         	{
@@ -392,6 +417,7 @@ public class Main extends Application {
                         			in.nextLine();
                         		}
                         	}
+                        	//attempts to delete entry if it exists
                         	deleteEntry(idNum, slChoice, param, db);
                 			break;
                 		case 4: //SEARCH
@@ -411,6 +437,7 @@ public class Main extends Application {
                 			
                 			System.out.println("Would you like to search by a number or a phrase? Enter (N/P)");
                 			String npChoice = in.next().toLowerCase();
+                			//different search functions for numbers versus phrases due to var types and the way mongo handles searching
                 			while (!npChoice.equals("n") && !npChoice.equals("p"))
                 			{
                 				System.out.println("Your input is invalid, please enter N/P");
@@ -421,11 +448,7 @@ public class Main extends Application {
             					System.out.println("Would you like to search by user, project, story, or log id? Enter (U/P/S/L)");
             					System.out.println("Disclaimer: you may not search by log-id if you are searching the story collection");
             					String idChoice = in.next().toLowerCase();
-            					/*while (!idChoice.equals("u") && !idChoice.equals("p") && !idChoice.equals("s"))
-                    			{
-                    				System.out.println("Your input is invalid, please enter N/P");
-                            		idChoice = in.next().toLowerCase();
-                    			}*/
+            					//input validation for the choice of search
             					param = "";
             					confirm = false;
             					while (!confirm)
@@ -491,6 +514,7 @@ public class Main extends Application {
                             			in.nextLine();
                             		}
                             	}
+                            	//prints the results of the search using validated inputs
             					print(numSearch(slChoice, param, idNum, db));
                 			}
                 			else
@@ -498,14 +522,16 @@ public class Main extends Application {
                 				System.out.println("Please enter the phrases you would like to search for");
                 				in.nextLine();
                 				String phrase = in.nextLine();
+                				//prints the results of the search using validated inputs
                 				print(phraseSearch(slChoice, phrase, db));
                 			}
                 			break;
                 		case 5:
-                			System.out.println("printing all story or log!");
+                			System.out.println("printing all stories or logs!");
                 			
                 			System.out.println("Would you like to print all stories or logs? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
+                			//input validation for story vs. log choice
                 			while (!slChoice.equals("s") && !slChoice.equals("l"))
                         	{
                         		System.out.println("Your input is invalid, please enter S/L");
@@ -518,6 +544,7 @@ public class Main extends Application {
                 				slChoice = "logs";
 
                 			System.out.println("Now printing all entries from " + slChoice + " collection:\n");
+                			//call to the print function
                 			printCol(slChoice, db);
                 			
                 			break;
@@ -525,12 +552,14 @@ public class Main extends Application {
                 	
                 	System.out.println("Would you like to continue using EffortLogger V2? (Y/N)");
                 	continueChoice = in.next().toLowerCase();
+                	//input validation for continue choice
                 	while (!continueChoice.equals("y") && !continueChoice.equals("n"))
                 	{
                 		System.out.println("Your input is invalid, please enter Y/N");
                 		continueChoice = in.next().toLowerCase();
                 	}
                 }
+                //closing of scanner object
                 in.close();
                 
             } catch (MongoException e) {
@@ -576,7 +605,8 @@ public class Main extends Application {
         col.insertOne(test);
         System.out.println("Log successfully added");
     }
-    
+    //functions identically to the insertLog function, just services the story collection instead
+    //as the story class has different values to be stored
     public void insertStory(int userId, int projectId, String title, String description, MongoDatabase db) 
     {
     	
@@ -594,8 +624,7 @@ public class Main extends Application {
     }
     
     //helps find every document in the database that matches a filter and data
-    //If you are looking for a user who's name is AJ then filter variable would = user 
-    //data would = AJ
+    //this method is for searching numerical values, the data variable must be an integer
     //pass the database from the start method
     //returns an iterable that has all the documents found
     public FindIterable<Document> numSearch(String colName, String filter, int data, MongoDatabase db)
@@ -610,6 +639,11 @@ public class Main extends Application {
     	return iterable;
     }
     
+    //helps find every document in the database that matches a filter and data
+    //If you are looking for a user who's name is AJ then filter variable would = user 
+    //data would = AJ
+    //pass the database from the start method
+    //returns an iterable that has all the documents found
     public FindIterable<Document> phraseSearch(String colName, String phrase, MongoDatabase db)
     {
     	MongoCollection<Document> col = db.getCollection(colName);
@@ -623,6 +657,7 @@ public class Main extends Application {
     	return iterable;
     }
     
+    //prints all entries from the specified collection in json format
     public void printCol(String colName, MongoDatabase db)
     {
     	MongoCollection<Document> col = db.getCollection(colName);
@@ -656,7 +691,7 @@ public class Main extends Application {
     }
     
     
-    //print all logs that where found and stored in an iterable
+    //print all logs that were found and stored in an iterable, pairs well with the search and find functions
     public void print(FindIterable<Document> iterable) {
     	MongoCursor<Document> results = iterable.iterator();
         while(results.hasNext())
