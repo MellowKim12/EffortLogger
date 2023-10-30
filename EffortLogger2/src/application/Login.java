@@ -142,11 +142,10 @@ public class Login{
 	}
 	
 	// deletes user from database by providing userID and password????
-	public void deleteUser(int userId, MongoDatabase db)
+	public void deleteUser(long userId, MongoDatabase db)
 	{
 		MongoCollection<Document> col = db.getCollection("users");
 		col.deleteOne(eq("userID", userId));
-		System.out.println("Deleted a user in database");
 	}
 	
 	// function to change variables in user object
@@ -157,13 +156,7 @@ public class Login{
 			return false;
 		
 		MongoCollection<Document> col = db.getCollection("users");
-		// check if any inputs would already belong to an existing user
-		System.out.println("Created check filters");
-		if (col.find(eq("username", newUsername)).first() != null)
-			return false;
-		System.out.println("Cleared checkID");
-		if (col.find(eq("userID", newUserId)).first() != null)
-			return false;
+
 
 		System.out.println("Made past id filter checks and username checks");
 		// find user name in database
@@ -180,7 +173,7 @@ public class Login{
     			Updates.set("username", newUsername), 
     			Updates.set("password", encrypt(newPassword, secret)),
     			Updates.set("userID", newUserId),
-    			Updates.set("security-level", newSecurityLevel)
+    			Updates.set("securityLevel", newSecurityLevel)
     			);
     	
     	// UpdateOptions for inserting object to reduce risk
@@ -190,6 +183,14 @@ public class Login{
     	try
     	{
     		col.updateOne(filter, updates, options);
+    		
+    		// check if any inputs would already belong to an existing user
+    		System.out.println("Created check filters");
+    		if (col.find(eq("username", newUsername)).first() != null)
+    			return false;
+    		System.out.println("Cleared checkID");
+    		if (col.find(eq("userID", newUserId)).first() != null)
+    			return false;
     		System.out.println("Inserted User");
     		return true;
     	}
@@ -251,9 +252,6 @@ public class Login{
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 	
 }	// end of Login.java
 

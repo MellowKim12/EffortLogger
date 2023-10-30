@@ -625,9 +625,10 @@ public class Main extends Application {
                 			}
                 			System.out.println("Please enter a userID to delete the user: \n");
                 			
-                			int deleteID = in.nextInt();
+                			long deleteID = in.nextLong();
                 			
                 			loginSystems.deleteUser(deleteID, db);
+                			System.out.println("User was Deleted");
                 			break;
                 			
                 		case 8:
