@@ -587,6 +587,10 @@ public class Main extends Application {
                 		
                 		// adding new user
                 		case 6:
+                			if (userSecurity < 3) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
                 			System.out.println("Please fill out required prompts to add a new user\n");
                 			System.out.println("Please enter a username\n");
                 			String username = in.nextLine();
@@ -615,6 +619,10 @@ public class Main extends Application {
                 			break;
                 			
                 		case 7:
+                			if (userSecurity < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
                 			System.out.println("Please enter a userID to delete the user: \n");
                 			
                 			int deleteID = in.nextInt();
@@ -623,6 +631,11 @@ public class Main extends Application {
                 			break;
                 			
                 		case 8:
+                			if (userSecurity < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+
                 			System.out.println("Please enter a username: \n");
                 			String findUsername = in.nextLine();
                 			while (findUsername.equals(""))
@@ -673,6 +686,10 @@ public class Main extends Application {
                 			
                 		// print all users in database
                 		case 9:
+                			if (userSecurity < 5) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
                 			System.out.println("Now printing all users in database");
                 			loginSystems.printUsers(db);
                 			break;
