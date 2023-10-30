@@ -94,6 +94,7 @@ public class Main extends Application {
 	                // login systems
 	                System.out.println("Please enter your user credentials:" + "\n" + "Username:");
 	                String username = in.nextLine();
+	                currentUser = username;
 	                System.out.println("Password: ");
 	                String password = in.nextLine();
 	                
@@ -554,7 +555,14 @@ public class Main extends Application {
                 			}
                 			break;
                 		case 5:
+                			int securityLevelNum = checkSecurityLevel("users", currentUser, db);
+                			if (securityLevelNum < 5) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
                 			System.out.println("printing all stories or logs!");
+                			
                 			
                 			System.out.println("Would you like to print all stories or logs? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
@@ -578,6 +586,12 @@ public class Main extends Application {
                 		
                 		// adding new user
                 		case 6:
+                			int securityLvl = checkSecurityLevel("users", currentUser, db);
+                			if (securityLvl < 3) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
                 			System.out.println("Please fill out required prompts to add a new user\n");
                 			System.out.println("Please enter a username\n");
                 			String username = in.nextLine();
@@ -606,6 +620,11 @@ public class Main extends Application {
                 			break;
                 			
                 		case 7:
+                			int securityNumber = checkSecurityLevel("users", currentUser, db);
+                			if (securityNumber < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
                 			System.out.println("Please enter a userID to delete the user: \n");
                 			
                 			int deleteID = in.nextInt();
@@ -614,6 +633,12 @@ public class Main extends Application {
                 			break;
                 			
                 		case 8:
+                			int securityNumber2 = checkSecurityLevel("users", currentUser, db);
+                			if (securityNumber2 < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
                 			System.out.println("Please enter a username: \n");
                 			String findUsername = in.nextLine();
                 			while (findUsername.equals(""))
@@ -664,6 +689,11 @@ public class Main extends Application {
                 			
                 		// print all users in database
                 		case 9:
+                			int securityNum = checkSecurityLevel("users", currentUser, db);
+                			if (securityNum < 5) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
                 			System.out.println("Now printing all users in database");
                 			loginSystems.printUsers(db);
                 			break;
@@ -809,6 +839,19 @@ public class Main extends Application {
 		int newId = Integer.parseInt(results.next().get(sortParam).toString());
 		newId++;
 		return newId;
+    }
+    
+    //method that can be called to pull out the security level for a specified user for the cases
+    public int checkSecurityLevel(String colName, String username, MongoDatabase db) {
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	
+    	FindIterable<Document> filterUsers = col.find(eq("username", username));
+    	
+    	Document targetObject = filterUsers.first();
+    	
+		String secLvlString = targetObject.get("securityLevel").toString();
+		System.out.println(secLvlString);
+		return Integer.parseInt(secLvlString);
     }
     
     
