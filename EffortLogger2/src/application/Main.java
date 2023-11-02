@@ -57,15 +57,15 @@ public class Main extends Application {
     	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoDatabase db;
     	MongoCollection<Document> col;
+    	MongoCollection<Document> userCol;
     	
-    	
+    	// login system initialization
     	Login loginSystems = new Login();
     	
-    	
     	//basic user stuff that James/Cole can link to login credentials later on
-    	String currentUser = "Hugh Mungus";
-    	int userId = 420;
-    	int userSecurity = 1;
+    	String currentUser = "";
+    	long userId;
+    	int userSecurity;
   
     	int project = 1;
     	
@@ -82,7 +82,7 @@ public class Main extends Application {
     			//finding the database and collection
                 db = mongoClient.getDatabase("Effortlogs");
                 col = db.getCollection("logs");
-                
+                userCol = db.getCollection("users");
                 //initializes the indexes necessary for phrase searching
             	searchInit(db);
                 
@@ -93,16 +93,29 @@ public class Main extends Application {
                 {
 	                // login systems
 	                System.out.println("Please enter your user credentials:" + "\n" + "Username:");
+<<<<<<< HEAD
 	                String username = in.nextLine();
 	                currentUser = username;
+=======
+	                currentUser = in.nextLine();
+>>>>>>> main
 	                System.out.println("Password: ");
 	                String password = in.nextLine();
 	                
-	                if (loginSystems.findUser(username, password, db))
+	                if (loginSystems.findUser(currentUser, password, db))
 	                	authorize = true;
 	                else
 	                	System.out.println("Username or Password did not match. Try again");
                 }
+                
+                // retrieve all user info
+        		FindIterable<Document> filterUsers = userCol.find(eq("username", currentUser));
+        		MongoCursor<Document> userIterable = filterUsers.iterator();
+        		Document targetObject = userIterable.next();
+                userSecurity = Integer.parseInt(targetObject.get("securityLevel").toString());
+                userId = Long.parseLong(targetObject.get("userID").toString());
+
+
                 
                 //Main EffortLogger Loop (FOR NOW)
                 while (continueChoice.equals("y"))
@@ -586,12 +599,19 @@ public class Main extends Application {
                 		
                 		// adding new user
                 		case 6:
+<<<<<<< HEAD
                 			int securityLvl = checkSecurityLevel("users", currentUser, db);
                 			if (securityLvl < 3) {
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
                 			
+=======
+                			if (userSecurity < 3) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+>>>>>>> main
                 			System.out.println("Please fill out required prompts to add a new user\n");
                 			System.out.println("Please enter a username\n");
                 			String username = in.nextLine();
@@ -620,25 +640,38 @@ public class Main extends Application {
                 			break;
                 			
                 		case 7:
+<<<<<<< HEAD
                 			int securityNumber = checkSecurityLevel("users", currentUser, db);
                 			if (securityNumber < 2) {
+=======
+                			if (userSecurity < 2) {
+>>>>>>> main
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
                 			System.out.println("Please enter a userID to delete the user: \n");
                 			
-                			int deleteID = in.nextInt();
+                			long deleteID = in.nextLong();
                 			
                 			loginSystems.deleteUser(deleteID, db);
+                			System.out.println("User was Deleted");
                 			break;
                 			
                 		case 8:
+<<<<<<< HEAD
                 			int securityNumber2 = checkSecurityLevel("users", currentUser, db);
                 			if (securityNumber2 < 2) {
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
                 			
+=======
+                			if (userSecurity < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+
+>>>>>>> main
                 			System.out.println("Please enter a username: \n");
                 			String findUsername = in.nextLine();
                 			while (findUsername.equals(""))
@@ -689,8 +722,12 @@ public class Main extends Application {
                 			
                 		// print all users in database
                 		case 9:
+<<<<<<< HEAD
                 			int securityNum = checkSecurityLevel("users", currentUser, db);
                 			if (securityNum < 5) {
+=======
+                			if (userSecurity < 5) {
+>>>>>>> main
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
@@ -741,7 +778,7 @@ public class Main extends Application {
     //insert into logs collection in database we have to manually pass the db feel free to add more tags
     //to get the amounts of logs use col.count() and add 1 
     // example use: insertLog("Cole", 1, "description of user story", col.countDocuments() + 1, db)
-    public void insertLog(int userId, int projectId, int storyId, String details, MongoDatabase db) 
+    public void insertLog(long userId, int projectId, int storyId, String details, MongoDatabase db) 
     {
     	
     	MongoCollection<Document> col = db.getCollection("logs");
@@ -758,7 +795,7 @@ public class Main extends Application {
     }
     //functions identically to the insertLog function, just services the story collection instead
     //as the story class has different values to be stored
-    public void insertStory(int userId, int projectId, String title, String description, MongoDatabase db) 
+    public void insertStory(long userId, int projectId, String title, String description, MongoDatabase db) 
     {
     	
     	MongoCollection<Document> col = db.getCollection("stories"); 

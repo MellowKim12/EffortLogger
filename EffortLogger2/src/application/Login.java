@@ -54,8 +54,7 @@ public class Login{
 		String addPassword = password;
 		int addSecurityLevel = securityLevel;
 		
-		
-		System.out.println("in createUser");
+		// userID creation
 		UUID userID = UUID.randomUUID();
 		long userInt = Long.parseLong(Math.abs(userID.getLeastSignificantBits()) + "");	
 
