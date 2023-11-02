@@ -1,5 +1,6 @@
 package application;
 
+// designed by James Kim
 import java.util.UUID;
 
 
@@ -47,6 +48,8 @@ public class Login{
 	// gathers information about the user such as username, password, etc. and pushes it to the database
 	public void addUser(String username, String password, int securityLevel, MongoDatabase db)
 	{
+		// variable acquisition
+		
 		String addUsername = username;
 		String addPassword = password;
 		int addSecurityLevel = securityLevel;
@@ -54,31 +57,22 @@ public class Login{
 		
 		System.out.println("in createUser");
 		UUID userID = UUID.randomUUID();
-		System.out.println("made UUID");
 		long userInt = Long.parseLong(Math.abs(userID.getLeastSignificantBits()) + "");	
-		System.out.println("parsed the int:       " + userInt);
-		
 
 		// initialize collection
     	MongoCollection<Document> col = db.getCollection("users");
-    	System.out.println("Created col");
     	// create new initial user with dummy password and insert it into database
     	Document newUser = new Document("username", addUsername)
     			.append("password", "")
     			.append("userID", userInt)
     			.append("securityLevel", addSecurityLevel);
-    	System.out.println("Created document user");
     	col.insertOne(newUser);
-    	System.out.println("inserted new user");
     	// create secret string through the newly inserted user's database objectID
     	String secret = newUser.getObjectId(newUser) + "";
-    	System.out.println("generated secret");
     	// create filter document that finds the dummy newUser
     	Document filter = new Document("userID", userInt);
-    	System.out.println("created filterr");
     	// Update object that contains new encrypted password
     	Bson updates = Updates.combine(Updates.set("password", encrypt(addPassword, secret)));
-    	System.out.println("created updates BSON with succesfully encrypted");
     	// UpdateOptions for inserting object to reduce risk
     	UpdateOptions options = new UpdateOptions().upsert(true);
     	
@@ -98,8 +92,6 @@ public class Login{
 	// searches for user in database. If parameters match, return true. Else return false
 	public boolean findUser(String username, String password, MongoDatabase db)
 	{
-		
-		
 		MongoCollection<Document> col = db.getCollection("users");
 		// find user name in database
 		FindIterable<Document> filterUsers = col.find(eq("username", username));
@@ -151,11 +143,10 @@ public class Login{
 	}
 	
 	// deletes user from database by providing userID and password????
-	public void deleteUser(int userId, MongoDatabase db)
+	public void deleteUser(long userId, MongoDatabase db)
 	{
 		MongoCollection<Document> col = db.getCollection("users");
 		col.deleteOne(eq("userID", userId));
-		System.out.println("Deleted a user in database");
 	}
 	
 	// function to change variables in user object
@@ -166,13 +157,7 @@ public class Login{
 			return false;
 		
 		MongoCollection<Document> col = db.getCollection("users");
-		// check if any inputs would already belong to an existing user
-		System.out.println("Created check filters");
-		if (col.find(eq("username", newUsername)).first() != null)
-			return false;
-		System.out.println("Cleared checkID");
-		if (col.find(eq("userID", newUserId)).first() != null)
-			return false;
+
 
 		System.out.println("Made past id filter checks and username checks");
 		// find user name in database
@@ -189,7 +174,7 @@ public class Login{
     			Updates.set("username", newUsername), 
     			Updates.set("password", encrypt(newPassword, secret)),
     			Updates.set("userID", newUserId),
-    			Updates.set("security-level", newSecurityLevel)
+    			Updates.set("securityLevel", newSecurityLevel)
     			);
     	
     	// UpdateOptions for inserting object to reduce risk
@@ -199,6 +184,14 @@ public class Login{
     	try
     	{
     		col.updateOne(filter, updates, options);
+    		
+    		// check if any inputs would already belong to an existing user
+    		System.out.println("Created check filters");
+    		if (col.find(eq("username", newUsername)).first() != null)
+    			return false;
+    		System.out.println("Cleared checkID");
+    		if (col.find(eq("userID", newUserId)).first() != null)
+    			return false;
     		System.out.println("Inserted User");
     		return true;
     	}
@@ -260,9 +253,6 @@ public class Login{
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 	
 }	// end of Login.java
 
