@@ -93,7 +93,12 @@ public class Main extends Application {
                 {
 	                // login systems
 	                System.out.println("Please enter your user credentials:" + "\n" + "Username:");
+<<<<<<< HEAD
+	                String username = in.nextLine();
+	                currentUser = username;
+=======
 	                currentUser = in.nextLine();
+>>>>>>> main
 	                System.out.println("Password: ");
 	                String password = in.nextLine();
 	                
@@ -563,7 +568,14 @@ public class Main extends Application {
                 			}
                 			break;
                 		case 5:
+                			int securityLevelNum = checkSecurityLevel("users", currentUser, db);
+                			if (securityLevelNum < 5) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
                 			System.out.println("printing all stories or logs!");
+                			
                 			
                 			System.out.println("Would you like to print all stories or logs? Enter (S/L)\n");
                 			slChoice = in.next().toLowerCase();
@@ -587,10 +599,19 @@ public class Main extends Application {
                 		
                 		// adding new user
                 		case 6:
+<<<<<<< HEAD
+                			int securityLvl = checkSecurityLevel("users", currentUser, db);
+                			if (securityLvl < 3) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
+=======
                 			if (userSecurity < 3) {
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
+>>>>>>> main
                 			System.out.println("Please fill out required prompts to add a new user\n");
                 			System.out.println("Please enter a username\n");
                 			String username = in.nextLine();
@@ -619,7 +640,12 @@ public class Main extends Application {
                 			break;
                 			
                 		case 7:
+<<<<<<< HEAD
+                			int securityNumber = checkSecurityLevel("users", currentUser, db);
+                			if (securityNumber < 2) {
+=======
                 			if (userSecurity < 2) {
+>>>>>>> main
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
@@ -632,11 +658,20 @@ public class Main extends Application {
                 			break;
                 			
                 		case 8:
+<<<<<<< HEAD
+                			int securityNumber2 = checkSecurityLevel("users", currentUser, db);
+                			if (securityNumber2 < 2) {
+                				System.out.println("Invalid Security Level");
+                				break;
+                			}
+                			
+=======
                 			if (userSecurity < 2) {
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
 
+>>>>>>> main
                 			System.out.println("Please enter a username: \n");
                 			String findUsername = in.nextLine();
                 			while (findUsername.equals(""))
@@ -687,7 +722,12 @@ public class Main extends Application {
                 			
                 		// print all users in database
                 		case 9:
+<<<<<<< HEAD
+                			int securityNum = checkSecurityLevel("users", currentUser, db);
+                			if (securityNum < 5) {
+=======
                 			if (userSecurity < 5) {
+>>>>>>> main
                 				System.out.println("Invalid Security Level");
                 				break;
                 			}
@@ -836,6 +876,19 @@ public class Main extends Application {
 		int newId = Integer.parseInt(results.next().get(sortParam).toString());
 		newId++;
 		return newId;
+    }
+    
+    //method that can be called to pull out the security level for a specified user for the cases
+    public int checkSecurityLevel(String colName, String username, MongoDatabase db) {
+    	MongoCollection<Document> col = db.getCollection(colName);
+    	
+    	FindIterable<Document> filterUsers = col.find(eq("username", username));
+    	
+    	Document targetObject = filterUsers.first();
+    	
+		String secLvlString = targetObject.get("securityLevel").toString();
+		System.out.println(secLvlString);
+		return Integer.parseInt(secLvlString);
     }
     
     
