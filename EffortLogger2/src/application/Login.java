@@ -43,7 +43,26 @@ public class Login{
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 	private static final String ALGORITHM = "AES";
+	private static String password;
+	private static String username;
 	
+	//getters and setters I added
+	public static void setPassword(String newPassword) {
+		password = newPassword;
+	
+	}
+	
+	public static void setUsername(String newUser) {
+		username = newUser;
+	}
+	
+	public static String getUsername() {
+		return username;
+	}
+	
+	public static String getPassword() {
+		return password;
+	}
 	
 	// gathers information about the user such as username, password, etc. and pushes it to the database
 	public void addUser(String username, String password, int securityLevel, MongoDatabase db)
