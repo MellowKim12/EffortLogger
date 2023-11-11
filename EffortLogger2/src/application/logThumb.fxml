@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="101.0" prefWidth="509.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.logThumbController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="101.0" prefWidth="543.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.logThumbController">
    <children>
-      <Pane prefHeight="101.0" prefWidth="477.0" style="-fx-border-color: black;">
+      <Pane prefHeight="101.0" prefWidth="496.0" style="-fx-border-color: black;">
          <children>
-            <Button alignment="TOP_RIGHT" contentDisplay="CENTER" layoutX="469.0" layoutY="11.0" mnemonicParsing="false" style="-fx-background-color: #8B0000;" text="X" textAlignment="CENTER" textFill="WHITE" />
-            <Text fx:id="LogId" layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-            <Text fx:id="LogDesc" layoutX="14.0" layoutY="73.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-            <Button layoutX="412.0" layoutY="11.0" mnemonicParsing="false" text="Edit" />
+            <Text fx:id="LogDesc" layoutX="14.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+            <Text fx:id="LogId" layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+            <Button layoutX="450.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-radius: 6;" text="Edit" />
+            <Button layoutX="505.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: red; -fx-background-radius: 6;" text="x" textFill="WHITE" />
          </children>
       </Pane>
    </children>
