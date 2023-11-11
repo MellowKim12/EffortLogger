@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EffortLoggerMainUI">
+   <children>
+      <Text layoutX="31.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your Logs: " wrappingWidth="70.9013671875" />
+      <ButtonBar prefHeight="40.0" prefWidth="200.0" />
+      <Button layoutX="519.0" layoutY="109.0" mnemonicParsing="false" style="-fx-background-color: #02cc2e;" text="add new">
+         <font>
+            <Font name="System Bold" size="10.0" />
+         </font>
+      </Button>
+      <Line endX="566.5" endY="136.99998474121094" startX="24.0" startY="137.0" />
+      <ScrollPane layoutX="23.0" layoutY="147.0" prefHeight="239.0" prefWidth="544.0" vbarPolicy="ALWAYS">
+         <content>
+            <GridPane fx:id="logPane">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+            </GridPane>
+         </content>
+      </ScrollPane>
+      <Text fx:id="welcome" layoutX="154.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome: " />
+   </children>
+</AnchorPane>
+
+

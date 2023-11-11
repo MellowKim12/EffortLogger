@@ -43,25 +43,25 @@ public class Login{
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 	private static final String ALGORITHM = "AES";
-	private static String password;
-	private static String username;
+	private String password;
+	private String username;
 	
 	//getters and setters I added
-	public static void setPassword(String newPassword) {
-		password = newPassword;
+	public void setPassword(String newPassword) {
+		this.password = newPassword;
 	
 	}
 	
-	public static void setUsername(String newUser) {
-		username = newUser;
+	public void setUsername(String newUser) {
+		this.username = newUser;
 	}
 	
-	public static String getUsername() {
-		return username;
+	public String getUsername() {
+		return this.username;
 	}
 	
-	public static String getPassword() {
-		return password;
+	public String getPassword() {
+		return this.password;
 	}
 	
 	// gathers information about the user such as username, password, etc. and pushes it to the database
