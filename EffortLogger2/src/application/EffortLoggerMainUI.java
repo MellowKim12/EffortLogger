@@ -102,7 +102,7 @@ public class EffortLoggerMainUI {
 						columns = 0;
 						rows++;
 					}
-					GridPane.setMargin(box, new Insets(10));
+//					GridPane.setMargin(box, new Insets(10));
 					logPane.add(box, columns++, rows);
 					
 					
