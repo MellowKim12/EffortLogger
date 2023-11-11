@@ -7,7 +7,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="101.0" prefWidth="171.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.logThumbController">
    <children>
-      <Text fx:id="LogId" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="24.21630859375">
+      <Text fx:id="LogId" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
          <VBox.margin>
             <Insets bottom="20.0" left="5.0" top="5.0" />
          </VBox.margin>

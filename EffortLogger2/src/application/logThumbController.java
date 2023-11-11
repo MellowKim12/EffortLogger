@@ -25,7 +25,7 @@ public class logThumbController {
     
 	
     public void setData(log logShow) {
-    	LogDesc.setText(logShow.getDescription());
-    	LogId.setText(logShow.getLogID());    			
+    	LogDesc.setText("Description: " + logShow.getDescription());
+    	LogId.setText("LogID: " + logShow.getLogID());    			
     }
 }
