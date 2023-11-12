@@ -52,14 +52,12 @@ public class logThumbController {
     	int indexOf =  LogIdtext.indexOf(" ");
     	int editLogID = Integer.parseInt(LogIdtext.substring(indexOf + 1));
     	editLogController editLogData = fxmlLoader.getController();
-    	editLogData.setData(editLogID, login);
+    	editLogData.setData(editLogID);
     	Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		Scene scene = new Scene(root);
 		stage.setTitle("Log Editor");
 		stage.setScene(scene);
 		stage.show();
-    	
-    	
     }
     
     public void deleteLogWarn(ActionEvent event) throws IOException {
@@ -91,7 +89,7 @@ public class logThumbController {
 		        	int deleteLog = Integer.parseInt(LogIdtext.substring(indexOf + 1));
 		        	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
 		        	MongoClient mongoClient = MongoClients.create(connectionString);
-		        	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); ;
+		        	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); 
 		        	MongoCollection<Document> userCol = db.getCollection("users");
 		        	MongoCollection<Document> col = db.getCollection("logs");
 		        	FindIterable<Document> findUserId = col.find(eq("log-id", deleteLog));

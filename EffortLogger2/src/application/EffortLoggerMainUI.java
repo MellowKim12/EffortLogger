@@ -120,7 +120,6 @@ public class EffortLoggerMainUI {
 		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
 		list = new ArrayList<>();
-		System.out.println(loginSystems.getUsername());
 		FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystems.getUsername()));
 		Document targetObject = filterUsers.first();
 		int id = Integer.parseInt(targetObject.get("userID").toString());
