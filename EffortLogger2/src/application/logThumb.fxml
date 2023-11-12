@@ -12,7 +12,7 @@
             <Button alignment="TOP_RIGHT" contentDisplay="CENTER" layoutX="469.0" layoutY="11.0" mnemonicParsing="false" onAction="#deleteLogWarn" style="-fx-background-color: #8B0000;" text="X" textAlignment="CENTER" textFill="WHITE" />
             <Text fx:id="LogId" layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
             <Text fx:id="LogDesc" layoutX="14.0" layoutY="73.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-            <Button layoutX="412.0" layoutY="11.0" mnemonicParsing="false" text="Edit" />
+            <Button layoutX="412.0" layoutY="11.0" mnemonicParsing="false" onAction="#editLog" text="Edit" />
          </children>
       </Pane>
    </children>

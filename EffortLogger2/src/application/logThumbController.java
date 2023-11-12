@@ -45,6 +45,23 @@ public class logThumbController {
     	login = logShow.getLogin();
     }
     
+    public void editLog(ActionEvent event) throws IOException {
+    	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("editLog.fxml"));
+    	Parent root = fxmlLoader.load();
+    	String LogIdtext = LogId.getText();
+    	int indexOf =  LogIdtext.indexOf(" ");
+    	int editLogID = Integer.parseInt(LogIdtext.substring(indexOf + 1));
+    	editLogController editLogData = fxmlLoader.getController();
+    	editLogData.setData(editLogID, login);
+    	Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		Scene scene = new Scene(root);
+		stage.setTitle("Log Editor");
+		stage.setScene(scene);
+		stage.show();
+    	
+    	
+    }
+    
     public void deleteLogWarn(ActionEvent event) throws IOException {
     	StackPane root2 = new StackPane();
     	Label label = new Label("Are you sure you want to delete?");

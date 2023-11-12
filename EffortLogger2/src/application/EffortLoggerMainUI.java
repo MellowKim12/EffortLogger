@@ -161,53 +161,5 @@ public class EffortLoggerMainUI {
 				}
 		}
 	}
-
-	
-
-
-//	public void initialize(URL location, ResourceBundle resources) {
-////		// TODO Auto-generated method stub
-////		
-//		list = new ArrayList<>();
-//		FindIterable<Document> filterUsers = col.find(eq("username", loginSystem.getUsername()));
-//		Document targetObject = filterUsers.first();
-//		long id = (long) targetObject.get("userID");
-//		MongoCollection<Document> col2 = db.getCollection("logs");
-//		FindIterable<Document> logs = col2.find(eq("user-id", id));
-//		if(logs.first() != null) {
-//			MongoCursor<Document> results = logs.iterator();
-//			while(results.hasNext())
-//			{
-//				Document iterLog = results.next();
-//				log insertlog = new log();
-//				insertlog.setDescription(iterLog.get("details").toString());
-//				insertlog.setlogID((int)iterLog.get("log-id"));
-//				list.add(insertlog);
-//			}
-//			int columns = 0;
-//			int rows = 1;
-//			try {
-//				for(int i = 0; i < list.size(); i++) {
-//					FXMLLoader fxml = new FXMLLoader();
-//					fxml.setLocation(getClass().getResource("logThumb.fxml"));
-//					VBox box = fxml.load();
-//					logThumbController logthumb = fxml.getController();
-//					logthumb.setData(list.get(i));
-//					if(columns == 5)
-//					{
-//						columns = 0;
-//						rows++;
-//					}
-//					logPane.add(box, columns++, rows);
-//					GridPane.setMargin(box, new Insets(10));
-//					
-//				}
-//			}
-//				catch(IOException e) {
-//					e.printStackTrace();
-//				}
-//		}
-//	}
-			
 	
 }
