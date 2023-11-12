@@ -86,6 +86,54 @@ public class EffortLoggerMainUI {
 				log insertlog = new log();
 				insertlog.setDescription(iterLog.get("details").toString());
 				insertlog.setlogID((int)iterLog.get("log-id"));
+				insertlog.setLogin(loginSystem);
+				list.add(insertlog);
+			}
+			int columns = 0;
+			int rows = 1;
+			try {
+				for(int i = 0; i < list.size(); i++) {
+					FXMLLoader fxml = new FXMLLoader();
+					fxml.setLocation(getClass().getResource("logThumb.fxml"));
+					VBox box = fxml.load();
+					logThumbController logthumb = fxml.getController();
+					logthumb.setData(list.get(i));
+					if(columns == 1)
+					{
+						columns = 0;
+						rows++;
+					}
+//					GridPane.setMargin(box, new Insets(10));
+					logPane.add(box, columns++, rows);
+					
+					
+				}
+			}
+				catch(IOException e) {
+					e.printStackTrace();
+				}
+		}
+		
+	}
+	
+	public void update(Login loginSystems, MongoDatabase db, MongoCollection<Document> userCol,MongoCollection<Document> col ) {
+		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
+		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
+		list = new ArrayList<>();
+		System.out.println(loginSystems.getUsername());
+		FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystems.getUsername()));
+		Document targetObject = filterUsers.first();
+		int id = Integer.parseInt(targetObject.get("userID").toString());
+		FindIterable<Document> logs = col.find(eq("user-id", id));
+		if(logs.first() != null) {
+			MongoCursor<Document> results = logs.iterator();
+			while(results.hasNext())
+			{
+				Document iterLog = results.next();
+				log insertlog = new log();
+				insertlog.setDescription(iterLog.get("details").toString());
+				insertlog.setlogID((int)iterLog.get("log-id"));
+				insertlog.setLogin(loginSystem);
 				list.add(insertlog);
 			}
 			int columns = 0;
@@ -113,6 +161,8 @@ public class EffortLoggerMainUI {
 				}
 		}
 	}
+
+	
 
 
 //	public void initialize(URL location, ResourceBundle resources) {
