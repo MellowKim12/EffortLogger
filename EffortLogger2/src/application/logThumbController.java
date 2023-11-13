@@ -45,6 +45,21 @@ public class logThumbController {
     	login = logShow.getLogin();
     }
     
+    public void editLog(ActionEvent event) throws IOException {
+    	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("editLog.fxml"));
+    	Parent root = fxmlLoader.load();
+    	String LogIdtext = LogId.getText();
+    	int indexOf =  LogIdtext.indexOf(" ");
+    	int editLogID = Integer.parseInt(LogIdtext.substring(indexOf + 1));
+    	editLogController editLogData = fxmlLoader.getController();
+    	editLogData.setData(editLogID);
+    	Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+		Scene scene = new Scene(root);
+		stage.setTitle("Log Editor");
+		stage.setScene(scene);
+		stage.show();
+    }
+    
     public void deleteLogWarn(ActionEvent event) throws IOException {
     	StackPane root2 = new StackPane();
     	Label label = new Label("Are you sure you want to delete?");
@@ -74,7 +89,7 @@ public class logThumbController {
 		        	int deleteLog = Integer.parseInt(LogIdtext.substring(indexOf + 1));
 		        	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
 		        	MongoClient mongoClient = MongoClients.create(connectionString);
-		        	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); ;
+		        	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); 
 		        	MongoCollection<Document> userCol = db.getCollection("users");
 		        	MongoCollection<Document> col = db.getCollection("logs");
 		        	FindIterable<Document> findUserId = col.find(eq("log-id", deleteLog));
