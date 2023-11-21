@@ -4,6 +4,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.bson.Document;
 
@@ -37,63 +38,81 @@ public class editLogController {
     private TextField editSID;
 
     @FXML
-    private DatePicker editTS;
+    private DatePicker editStartTime;
+
+    @FXML
+    private DatePicker editEndTime;
 
     @FXML
     private Text editWelcome;
-    
+
     @FXML
     private Text finishUpdating;
 
     private int logID;
-    
+
+    private Date editTime;
+
+
+    // updates UI appropriately with the logID of current log being updated
     public void setData(int logID) {
     	this.logID = logID;
     	editWelcome.setText("Editing Log: " + logID);
     }
-    
+
+    // handles the user input back-end with the server and updates the log
     public void editLogData(ActionEvent event) {
-    	
+    	// establish connection with mongo server
     	Main updateLogs = new Main();
     	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoClient mongoClient = MongoClients.create(connectionString);
-    	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); 
+    	MongoDatabase db = mongoClient.getDatabase("Effortlogs");
+
+    	// note time of submit
+    	editTime = new Date();
+
+    	// edit log checks. each case represents different case of input validation
     	if(!editDetails.getText().equals(""))
     	{
     		String newDets = editDetails.getText();
-    		updateLogs.update("logs", "details", "log-id", logID,  newDets, 0, db);
+    		updateLogs.update("logs", "details", "log-id", logID,  newDets, 0, editTime, db);
     	}
     	if(!editProj.getText().equals(""))
     	{
     		int projectID = Integer.parseInt(editProj.getText());
-    		updateLogs.update("logs", "project-id", "log-id", logID, null, projectID, db);
+    		updateLogs.update("logs", "project-id", "log-id", logID, null, projectID, editTime, db);
     	}
     	if(!editSID.getText().equals(""))
     	{
     		int storyID = Integer.parseInt(editSID.getText());
-    		updateLogs.update("logs", "story-id", "log-id", logID, null, storyID, db);
+    		updateLogs.update("logs", "story-id", "log-id", logID, null, storyID, editTime, db);
     	}
-    	if(editTS.getValue() != null)
+
+    	// checks whether or not start-time and end-time fields are empty or not
+    	if(editStartTime.getValue() != null)
     	{
     		MongoCollection<Document> col = db.getCollection("logs");
-    		col.findOneAndUpdate(eq("lod-id", logID), set("TimeStamp", editTS.getValue()));
+    		col.findOneAndUpdate(eq("log-id", logID), set("start-time", editStartTime.getValue()));
+    		col.findOneAndUpdate(eq("log-id", logID), set("end-time", editEndTime.getValue()));
     	}
+
     	finishUpdating.setText("Done updating");
-    	
+
     }
-    
+
+    // returns back to the home screen and updates it accordingly
     public void returnHome(ActionEvent event) throws IOException{
     	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EffortLoggerMainUI.fxml"));
     	Parent root;
     	root = fxmlLoader.load();
     	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoClient mongoClient = MongoClients.create(connectionString);
-    	MongoDatabase db = mongoClient.getDatabase("Effortlogs"); ;
+    	MongoDatabase db = mongoClient.getDatabase("Effortlogs");
     	MongoCollection<Document> userCol = db.getCollection("users");
     	MongoCollection<Document> col = db.getCollection("logs");
     	FindIterable<Document> findUserId = col.find(eq("log-id", logID));
 		Document targetObject = findUserId.first();
-		String userId = targetObject.get("user-id").toString();	    		
+		String userId = targetObject.get("user-id").toString();
 		FindIterable<Document> findUser = userCol.find(eq("userID", userId));
 		Document targetuser = findUser.first();
 		String userName = targetuser.get("username").toString();
@@ -107,7 +126,6 @@ public class editLogController {
 		stage.setScene(scene);
 		stage.show();
     }
-    
-    
+
 
 }
