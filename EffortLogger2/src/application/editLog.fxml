@@ -17,10 +17,12 @@
       <Label layoutX="361.0" layoutY="103.0" prefHeight="17.0" prefWidth="71.0" text="Log Details:" />
       <Label layoutX="80.0" layoutY="188.0" prefHeight="17.0" prefWidth="47.0" text="Story ID:" />
       <TextArea fx:id="editDetails" layoutX="361.0" layoutY="126.0" prefHeight="149.0" prefWidth="200.0" />
-      <Label layoutX="62.0" layoutY="249.0" prefHeight="17.0" prefWidth="71.0" text="TimeStamp:" />
-      <DatePicker fx:id="editTS" layoutX="139.0" layoutY="244.0" />
-      <Button layoutX="301.0" layoutY="312.0" mnemonicParsing="false" onAction="#editLogData" style="-fx-background-color: #0ec946; -fx-background-radius: 7;" text="Done" textFill="WHITE" />
+      <Label layoutX="45.0" layoutY="248.0" prefHeight="17.0" prefWidth="103.0" text="New Start Time" />
+      <DatePicker fx:id="editStartTime" layoutX="139.0" layoutY="244.0" />
+      <Button layoutX="291.0" layoutY="333.0" mnemonicParsing="false" onAction="#editLogData" style="-fx-background-color: #0ec946; -fx-background-radius: 7;" text="Done" textFill="WHITE" />
       <Text fx:id="editWelcome" layoutX="268.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
       <Text fx:id="finishUpdating" layoutX="361.0" layoutY="330.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Label layoutX="45.0" layoutY="292.0" prefHeight="17.0" prefWidth="103.0" text="New End Time" />
+      <DatePicker fx:id="editEndTime" layoutX="139.0" layoutY="288.0" />
    </children>
 </AnchorPane>
