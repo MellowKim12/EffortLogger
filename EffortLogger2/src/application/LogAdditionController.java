@@ -102,11 +102,12 @@ public class LogAdditionController {
 		Main object = new Main();
 		String desc = description.getText();
 		String story = storyChoice.getValue();
+		//check if log description and story are null
 		if(desc != null && story != null) {
 			FindIterable<Document> found = object.phraseSearch("stories", story, db);
 			MongoCursor<Document> result = found.iterator();
 			int storyId = Integer.parseInt(result.next().get("story-id").toString());
-			if(pressStart) {
+			if(pressStart) { //checks if user pressed start button
 				Main.insertLog(userId, projectId, storyId, desc, startTime, db);
 				description.clear();
 				storyChoice.valueProperty().set(null);
@@ -117,12 +118,12 @@ public class LogAdditionController {
 			}
 			else {
 				clockStatus.setText("Clock wasn't started");
-				clockStatus.setTextFill(Color.RED);
+				clockStatus.setTextFill(Color.RED);//gives a warning
 			}
 		}
 		else {
 			clockStatus.setText("Please fill out description and choose a story");
-			clockStatus.setTextFill(Color.RED);
+			clockStatus.setTextFill(Color.RED); //gives a warning
 		}
 	}
 
