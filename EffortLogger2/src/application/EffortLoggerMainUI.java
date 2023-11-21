@@ -1,48 +1,30 @@
 package application;
 
-import java.io.IOException;
-import java.net.URL;
+import static com.mongodb.client.model.Filters.eq;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoException;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.bson.Document;
+
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Indexes;
-
-import static com.mongodb.client.model.Filters.eq;
-
-import java.security.Timestamp;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Sorts.descending;
 
 import javafx.event.ActionEvent;
-import javafx.fxml.*;
-import javafx.geometry.Insets;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.log;
-import javafx.scene.layout.VBox;
 //
 //implements Initializable
 public class EffortLoggerMainUI {
@@ -61,16 +43,16 @@ public class EffortLoggerMainUI {
 
     @FXML
     private Text welcome;
-    
+
     @FXML
     private Button startPP;
-    
+
     @FXML
     private Button addButton;
-	
+
 	//This method is called by the effortLoggerMainUIController in LoginController.java
 	//Allows us to send variables we want to send to other controller files
-	
+
 	public void recieveTransferedItems(String connectionString, MongoDatabase db, MongoCollection<Document> col, MongoCollection<Document> userCol, MongoClient mongoClient, Login loginSystem) {
 		this.connectionString = connectionString;
 		this.db = db;
@@ -100,12 +82,12 @@ public class EffortLoggerMainUI {
 			int columns = 0;
 			int rows = 1;
 			try {
-				for(int i = 0; i < list.size(); i++) {
+				for (log element : list) {
 					FXMLLoader fxml = new FXMLLoader();
 					fxml.setLocation(getClass().getResource("logThumb.fxml"));
 					VBox box = fxml.load();
 					logThumbController logthumb = fxml.getController();
-					logthumb.setData(list.get(i));
+					logthumb.setData(element);
 					if(columns == 1)
 					{
 						columns = 0;
@@ -113,17 +95,18 @@ public class EffortLoggerMainUI {
 					}
 //					GridPane.setMargin(box, new Insets(10));
 					logPane.add(box, columns++, rows);
-					
-					
+
+
 				}
 			}
 				catch(IOException e) {
 					e.printStackTrace();
 				}
 		}
-		
+
 	}
-	
+
+	// handles front-end UI update of documents stored in server
 	public void update(Login loginSystems, MongoDatabase db, MongoCollection<Document> userCol,MongoCollection<Document> col ) {
 		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
@@ -146,12 +129,12 @@ public class EffortLoggerMainUI {
 			int columns = 0;
 			int rows = 1;
 			try {
-				for(int i = 0; i < list.size(); i++) {
+				for (log element : list) {
 					FXMLLoader fxml = new FXMLLoader();
 					fxml.setLocation(getClass().getResource("logThumb.fxml"));
 					VBox box = fxml.load();
 					logThumbController logthumb = fxml.getController();
-					logthumb.setData(list.get(i));
+					logthumb.setData(element);
 					if(columns == 1)
 					{
 						columns = 0;
@@ -159,8 +142,8 @@ public class EffortLoggerMainUI {
 					}
 //					GridPane.setMargin(box, new Insets(10));
 					logPane.add(box, columns++, rows);
-					
-					
+
+
 				}
 			}
 				catch(IOException e) {
@@ -168,7 +151,7 @@ public class EffortLoggerMainUI {
 				}
 		}
 	}
-	
+
 	public void startPoker(ActionEvent event) throws IOException{
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("PlanningPokerMainMenu.fxml"));
 
@@ -183,7 +166,7 @@ public class EffortLoggerMainUI {
 		stage.show();
 
 	}
-	
+
 	public void addPage(ActionEvent event) throws IOException
 	{
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LogAddition.fxml"));
@@ -199,5 +182,5 @@ public class EffortLoggerMainUI {
 		stage.setScene(scene);
 		stage.show();
 	}
-	
+
 }
