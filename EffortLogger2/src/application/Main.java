@@ -1,47 +1,26 @@
 package application;
-	
-import java.util.Scanner;
-import java.util.Date;
-import java.util.InputMismatchException;
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoException;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Updates.set;
+
+import java.io.IOException;
+import java.util.Date;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Indexes;
 
-import static com.mongodb.client.model.Filters.eq;
-
-import java.io.IOException;
-import java.security.Timestamp;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Sorts.descending;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 
 /*
@@ -52,15 +31,16 @@ import static com.mongodb.client.model.Sorts.descending;
 
 
 public class Main extends Application {
-	
+
 	private boolean authorize = false;
-	
-	
+
+
     public static void main(String[] args) {
         launch(args);
     }
-    
-    public void start(Stage stage) throws IOException {
+
+    @Override
+	public void start(Stage stage) throws IOException {
     	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("login.fxml"));
     	Parent fxml = fxmlLoader.load();
     	Scene scene = new Scene(fxml,900,600);
@@ -68,7 +48,7 @@ public class Main extends Application {
     	stage.setScene(scene);
     	stage.show();
     }
-    
+
     //necessary function for making certain tags searchable by phrase
     //if you want to add more tags that store strings, add them to this so they can be properly searched
     public void searchInit(MongoDatabase db)
@@ -86,13 +66,13 @@ public class Main extends Application {
     		System.out.println(results.next());
     	}
     }
-    
+
     //insert into logs collection in database we have to manually pass the db feel free to add more tags
-    //to get the amounts of logs use col.count() and add 1 
+    //to get the amounts of logs use col.count() and add 1
     // example use: insertLog("Cole", 1, "description of user story", col.countDocuments() + 1, db)
-    public static void insertLog(long userId, int projectId, int storyId, String details, Date startTime, MongoDatabase db) 
+    public static void insertLog(long userId, int projectId, int storyId, String details, Date startTime, MongoDatabase db)
     {
-    	
+
     	MongoCollection<Document> col = db.getCollection("logs");
     	//return the most recent item in the collection
     	int logId = newId("logs", "log-id", db);
@@ -108,10 +88,10 @@ public class Main extends Application {
     }
     //functions identically to the insertLog function, just services the story collection instead
     //as the story class has different values to be stored
-    public void insertStory(long userId, int projectId, String title, String description, MongoDatabase db) 
+    public void insertStory(long userId, int projectId, String title, String description, MongoDatabase db)
     {
-    	
-    	MongoCollection<Document> col = db.getCollection("stories"); 
+
+    	MongoCollection<Document> col = db.getCollection("stories");
     	//return a newId based on the last id in the collection
     	int storyId = newId("stories", "story-id", db);
         Document test = new Document("user-id",userId)
@@ -123,7 +103,7 @@ public class Main extends Application {
         col.insertOne(test);
         System.out.println("Story successfully added");
     }
-    
+
     //helps find every document in the database that matches a filter and data
     //this method is for searching numerical values, the data variable must be an integer
     //pass the database from the start method
@@ -139,9 +119,9 @@ public class Main extends Application {
     	}
     	return iterable;
     }
-    
+
     //helps find every document in the database that matches a filter and data
-    //If you are looking for a user who's name is AJ then filter variable would = user 
+    //If you are looking for a user who's name is AJ then filter variable would = user
     //data would = AJ
     //pass the database from the start method
     //returns an iterable that has all the documents found
@@ -157,7 +137,7 @@ public class Main extends Application {
     	}
     	return iterable;
     }
-    
+
     //prints all entries from the specified collection in json format
     public void printCol(String colName, MongoDatabase db)
     {
@@ -167,11 +147,11 @@ public class Main extends Application {
     	while(results.hasNext())
         {
         	System.out.println(results.next().toJson());
-       
+
         }
     	return;
     }
-    
+
     //method finding the last of a certain collection
     public static FindIterable<Document> findLast(String colName, String sortParam, MongoDatabase db)
     {
@@ -180,9 +160,9 @@ public class Main extends Application {
     	iterable = col.find().limit(1).sort(descending(sortParam));
     	return iterable;
     }
-    
+
     //method that will return a new id number based off the last id of a certain collection
-    public static int newId(String colName, String sortParam, MongoDatabase db) 
+    public static int newId(String colName, String sortParam, MongoDatabase db)
     {
     	FindIterable<Document> bruh = findLast(colName, sortParam, db);
 		MongoCursor<Document> results = bruh.iterator();
@@ -190,8 +170,8 @@ public class Main extends Application {
 		newId++;
 		return newId;
     }
-    
-    
+
+
     //print all logs that were found and stored in an iterable, pairs well with the search and find functions
     public void print(FindIterable<Document> iterable) {
     	MongoCursor<Document> results = iterable.iterator();
@@ -200,7 +180,7 @@ public class Main extends Application {
         	System.out.println(results.next().toJson());
         }
     }
-    
+
     //finds the log we want to delete by log number then deletes it
     public void deleteEntry(int num, String colName, String param, MongoDatabase db){
     	MongoCollection<Document> col = db.getCollection(colName);
@@ -215,18 +195,20 @@ public class Main extends Application {
     		System.out.println(deleted.toJson());
     	}
     }
-    
-    //finds log by log number then sets attribute you decided in update string with data 
-    public void update(String colName, String param, String idParam, int idNum, String updatedPhrase, int updatedNum, MongoDatabase db) {
+
+    //finds log by log number then sets attribute you decided in update string with data
+    public void update(String colName, String param, String idParam, int idNum, String updatedPhrase, int updatedNum, Date updatedTime, MongoDatabase db) {
     	MongoCollection<Document> col = db.getCollection(colName);
     	if(updatedPhrase == null)
     	{
     		col.findOneAndUpdate(eq(idParam, idNum), set(param, updatedNum));
+    		col.findOneAndUpdate(eq(idParam, idNum), set("TimeStamp", updatedTime));
     	}
     	else {
     		col.findOneAndUpdate(eq(idParam, idNum), set(param, updatedPhrase));
+    		col.findOneAndUpdate(eq(idParam, idNum), set("TimeStamp", updatedTime));
     	}
     	System.out.println("We do a little updating");
     }
-    
+
 }

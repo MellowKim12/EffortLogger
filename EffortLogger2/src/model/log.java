@@ -17,12 +17,12 @@ public class log{
 	}
 	public void setDescription(String description) {
 		Description = description;
-	}	
+	}
 	public void setLogin(Login login)
 	{
 		this.login = login;
 	}
-	
+
 	public Login getLogin()
 	{
 		return login;
