@@ -51,6 +51,7 @@ public class LogAdditionController {
 	@FXML
 	private Label clockStatus;
 
+	private boolean pressStart;
 	public void recieveTransferedItems(String connectionString, MongoDatabase db, MongoCollection<Document> col, MongoCollection<Document> userCol, MongoClient mongoClient, Login loginSystem)
 	{
 		this.connectionString = connectionString;
@@ -60,6 +61,7 @@ public class LogAdditionController {
 		this.mongoClient = mongoClient;
 		this.loginSystem = loginSystem;
 		projectId = 1;
+		pressStart = false;
 
 		FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystem.getUsername()));
 		Document targetObject = filterUsers.first();
@@ -80,6 +82,7 @@ public class LogAdditionController {
 		System.out.println(startTime);
 		clockStatus.setText("Clock is Running");
 		clockStatus.setTextFill(Color.GREEN);
+		pressStart = true;
 	}
 
 	public void storeLog()
@@ -87,17 +90,29 @@ public class LogAdditionController {
 		Main object = new Main();
 		String desc = description.getText();
 		String story = storyChoice.getValue();
-
-		FindIterable<Document> found = object.phraseSearch("stories", story, db);
-		MongoCursor<Document> result = found.iterator();
-		int storyId = Integer.parseInt(result.next().get("story-id").toString());
-
-		Main.insertLog(userId, projectId, storyId, desc, startTime, db);
-		description.clear();
-		storyChoice.valueProperty().set(null);
-		startTime = null;
-		clockStatus.setText("Clock is Stopped");
-		clockStatus.setTextFill(Color.RED);
+		//check if log description and story are null
+		if(desc != null && story != null) {
+			FindIterable<Document> found = object.phraseSearch("stories", story, db);
+			MongoCursor<Document> result = found.iterator();
+			int storyId = Integer.parseInt(result.next().get("story-id").toString());
+			if(pressStart) { //checks if user pressed start button
+				Main.insertLog(userId, projectId, storyId, desc, startTime, db);
+				description.clear();
+				storyChoice.valueProperty().set(null);
+				startTime = null;
+				clockStatus.setText("Clock is Stopped");
+				clockStatus.setTextFill(Color.RED);
+				pressStart = false;
+			}
+			else {
+				clockStatus.setText("Clock wasn't started");
+				clockStatus.setTextFill(Color.RED);//gives a warning
+			}
+		}
+		else {
+			clockStatus.setText("Please fill out description and choose a story");
+			clockStatus.setTextFill(Color.RED); //gives a warning
+		}
 	}
 
 	public void returnHome(ActionEvent event) throws IOException
