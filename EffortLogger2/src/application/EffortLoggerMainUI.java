@@ -108,6 +108,9 @@ public class EffortLoggerMainUI {
 
 	// handles front-end UI update of documents stored in server
 	public void update(Login loginSystems, MongoDatabase db, MongoCollection<Document> userCol,MongoCollection<Document> col ) {
+		this.loginSystem = loginSystems;
+		this.userCol = userCol;
+		this.col = col;
 		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
 		list = new ArrayList<>();
