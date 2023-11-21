@@ -228,5 +228,4 @@ public class Main extends Application {
     	}
     	System.out.println("We do a little updating");
     }
-    
 }

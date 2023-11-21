@@ -13,7 +13,7 @@
       <TextField fx:id="playerField" layoutX="217.0" layoutY="167.0" />
       <Label layoutX="217.0" layoutY="76.0" text="Please Enter Name of Session" />
       <Label layoutX="217.0" layoutY="140.0" text="Please Enter Number of Participants (2,10)" />
-      <Label fx:id="errorLabel" layoutX="217.0" layoutY="236.0" textFill="#ff0202" />
+      <Label fx:id="errorLabel" layoutX="217.0" layoutY="300.0" textFill="#ff0202" />
       <Text layoutX="159.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please enter the issues, each separated with a comma" />
       <Text layoutX="149.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="i.e. ui development,asset creation,back-end development" />
       <TextField fx:id="issues" layoutX="23.0" layoutY="274.0" prefHeight="25.0" prefWidth="554.0" />
