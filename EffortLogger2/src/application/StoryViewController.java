@@ -24,10 +24,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.log;
+import model.*;
 //
 //implements Initializable
-public class EffortLoggerMainUI {
+public class StoryViewController {
 	private Scene scene;
 	private Stage stage;
 	private Parent root;
@@ -37,9 +37,9 @@ public class EffortLoggerMainUI {
 	private MongoCollection<Document> userCol;
 	private MongoClient mongoClient;
 	private Login loginSystem;
-	private ArrayList<log> list;
+	private ArrayList<story> list;
 	@FXML
-    private GridPane logPane;
+    private GridPane storyPane;
 
     @FXML
     private Text welcome;
@@ -48,10 +48,10 @@ public class EffortLoggerMainUI {
     private Button startPP;
 
     @FXML
-    private Button addButton;
+    private Button addStoryButton;
     
     @FXML
-    private Button storyButton;
+    private Button logButton;
 
 	//This method is called by the effortLoggerMainUIController in LoginController.java
 	//Allows us to send variables we want to send to other controller files
@@ -67,37 +67,41 @@ public class EffortLoggerMainUI {
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
 		list = new ArrayList<>();
 		System.out.println(loginSystem.getUsername());
-		FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystem.getUsername()));
-		Document targetObject = filterUsers.first();
-		int id = Integer.parseInt(targetObject.get("userID").toString());
-		FindIterable<Document> logs = col.find(eq("user-id", id));
-		if(logs.first() != null) {
-			MongoCursor<Document> results = logs.iterator();
+		//FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystem.getUsername()));
+		//Document targetObject = filterUsers.first();
+		//int id = Integer.parseInt(targetObject.get("userID").toString());
+		FindIterable<Document> stories = col.find();
+		if(stories.first() != null) {
+			MongoCursor<Document> results = stories.iterator();
 			while(results.hasNext())
 			{
-				Document iterLog = results.next();
-				log insertlog = new log();
-				insertlog.setDescription(iterLog.get("details").toString());
-				insertlog.setlogID((int)iterLog.get("log-id"));
-				insertlog.setLogin(loginSystem);
-				list.add(insertlog);
+				Document iterStory = results.next();
+				//System.out.println(iterStory);
+				story insertStory = new story();
+				insertStory.setDescription(iterStory.get("details").toString());
+				insertStory.setTitle(iterStory.get("title").toString());
+				insertStory.setStoryID((int)iterStory.get("story-id"));
+				insertStory.setProjectID((int)iterStory.get("project-id"));
+				insertStory.setLogin(loginSystem);
+				list.add(insertStory);
 			}
 			int columns = 0;
 			int rows = 1;
 			try {
-				for (log element : list) {
+				for (story element : list) {
 					FXMLLoader fxml = new FXMLLoader();
-					fxml.setLocation(getClass().getResource("logThumb.fxml"));
+					fxml.setLocation(getClass().getResource("storyThumb.fxml"));
 					VBox box = fxml.load();
-					logThumbController logthumb = fxml.getController();
-					logthumb.setData(element);
+					storyThumbController storythumb = fxml.getController();
+					storythumb.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem);
+					storythumb.setData(element);
 					if(columns == 1)
 					{
 						columns = 0;
 						rows++;
 					}
 //					GridPane.setMargin(box, new Insets(10));
-					logPane.add(box, columns++, rows);
+					storyPane.add(box, columns++, rows);
 
 
 				}
@@ -110,44 +114,45 @@ public class EffortLoggerMainUI {
 	}
 
 	// handles front-end UI update of documents stored in server
-	public void update(Login loginSystems, MongoDatabase db, MongoCollection<Document> userCol,MongoCollection<Document> col ) {
+	/*public void update(Login loginSystems, MongoDatabase db, MongoCollection<Document> userCol,MongoCollection<Document> col ) {
 		this.loginSystem = loginSystems;
 		this.userCol = userCol;
 		this.col = col;
 		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
 		list = new ArrayList<>();
-		FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystems.getUsername()));
-		Document targetObject = filterUsers.first();
-		int id = Integer.parseInt(targetObject.get("userID").toString());
-		FindIterable<Document> logs = col.find(eq("user-id", id));
-		if(logs.first() != null) {
-			MongoCursor<Document> results = logs.iterator();
+		//FindIterable<Document> filterUsers = userCol.find(eq("username", loginSystems.getUsername()));
+		//Document targetObject = filterUsers.first();
+		//int id = Integer.parseInt(targetObject.get("userID").toString());
+		FindIterable<Document> stories = col.find();
+		if(stories.first() != null) {
+			MongoCursor<Document> results = stories.iterator();
 			while(results.hasNext())
 			{
-				Document iterLog = results.next();
-				log insertlog = new log();
-				insertlog.setDescription(iterLog.get("details").toString());
-				insertlog.setlogID((int)iterLog.get("log-id"));
-				insertlog.setLogin(loginSystem);
-				list.add(insertlog);
+				Document iterStory = results.next();
+				story insertStory = new story();
+				insertStory.setDescription(iterStory.get("details").toString());
+				insertStory.setTitle(iterStory.get("title").toString());
+				insertStory.setStoryID((int)iterStory.get("story-id"));
+				insertStory.setLogin(loginSystem);
+				list.add(insertStory);
 			}
 			int columns = 0;
 			int rows = 1;
 			try {
-				for (log element : list) {
+				for (story element : list) {
 					FXMLLoader fxml = new FXMLLoader();
-					fxml.setLocation(getClass().getResource("logThumb.fxml"));
+					fxml.setLocation(getClass().getResource("storyThumb.fxml"));
 					VBox box = fxml.load();
-					logThumbController logthumb = fxml.getController();
-					logthumb.setData(element);
+					storyThumbController storythumb = fxml.getController();
+					storythumb.setData(element);
 					if(columns == 1)
 					{
 						columns = 0;
 						rows++;
 					}
 //					GridPane.setMargin(box, new Insets(10));
-					logPane.add(box, columns++, rows);
+					storyPane.add(box, columns++, rows);
 
 
 				}
@@ -156,7 +161,7 @@ public class EffortLoggerMainUI {
 					e.printStackTrace();
 				}
 		}
-	}
+	}*/
 
 	public void startPoker(ActionEvent event) throws IOException{
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("PlanningPokerMainMenu.fxml"));
@@ -173,14 +178,14 @@ public class EffortLoggerMainUI {
 
 	}
 
-	public void addPage(ActionEvent event) throws IOException
+	public void addStory(ActionEvent event) throws IOException
 	{
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LogAddition.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("StoryAddition.fxml"));
 
-		System.out.println("Switching to the Add Log Page");
+		System.out.println("Switching to the Story Log Page");
 		root = fxmlLoader.load();
-		LogAdditionController effortLoggerAddLogController = fxmlLoader.getController();
-		effortLoggerAddLogController.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem);
+		StoryAdditionController addStoryController = fxmlLoader.getController();
+		addStoryController.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem);
 
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
@@ -189,21 +194,20 @@ public class EffortLoggerMainUI {
 		stage.show();
 	}
 	
-	public void storyView(ActionEvent event) throws IOException
+	public void logView(ActionEvent event) throws IOException
 	{
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("StoryMainUI.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EffortLoggerMainUI.fxml"));
 		
-		System.out.println("Switching to the Story View Page");
+		System.out.println("Switching to the Log View Page");
 		root = fxmlLoader.load();
-		StoryViewController storyViewController = fxmlLoader.getController();
-		col = db.getCollection("stories");
-		storyViewController.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem);
+		EffortLoggerMainUI effortLoggerMainUI = fxmlLoader.getController();
+		col = db.getCollection("logs");
+		effortLoggerMainUI.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem);
 		
 		stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 		scene = new Scene(root);
-		stage.setTitle("Story View");
+		stage.setTitle("Log View");
 		stage.setScene(scene);
-		stage.show();
+		stage.show(); 
 	}
-
 }
