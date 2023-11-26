@@ -88,7 +88,7 @@ public class Main extends Application {
     }
     //functions identically to the insertLog function, just services the story collection instead
     //as the story class has different values to be stored
-    public void insertStory(long userId, int projectId, String title, String description, MongoDatabase db)
+    public static void insertStory(long userId, int projectId, String title, String description, MongoDatabase db)
     {
 
     	MongoCollection<Document> col = db.getCollection("stories");
