@@ -99,7 +99,6 @@ public class EffortLoggerMainUI {
 //					GridPane.setMargin(box, new Insets(10));
 					logPane.add(box, columns++, rows);
 
-
 				}
 			}
 				catch(IOException e) {
@@ -114,6 +113,8 @@ public class EffortLoggerMainUI {
 		this.loginSystem = loginSystems;
 		this.userCol = userCol;
 		this.col = col;
+		this.db = db;
+		
 		welcome.setText("Welcome To Effort Logger: "+ loginSystems.getUsername());
 		//This System.out.println prints out a piece of the transfered data to make sure the transfer worked
 		list = new ArrayList<>();

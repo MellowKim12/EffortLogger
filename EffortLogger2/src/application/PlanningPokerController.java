@@ -124,7 +124,8 @@ public class PlanningPokerController {
 			stage.setScene(scene);
 			stage.show();
 
-			System.out.println("Time to mvoe on!");
+			return;
+			//System.out.println("Time to mvoe on!");
 
 
 		}
