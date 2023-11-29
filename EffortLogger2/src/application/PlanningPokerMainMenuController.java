@@ -44,11 +44,14 @@ public class PlanningPokerMainMenuController {
 		private MongoClient mongoClient;
 		private Login loginSystem;
 		private boolean valid = false;
-		private String issuesGotten;
-		private String[] issueList;
+		private String issuesGotten, playersGotten;
+		private String username;
+		private String[] issueList, playerList;
 
 		public void startPoker(ActionEvent event) throws IOException{
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("PlanningPokerUI.fxml"));
+
+			valid = true;
 
 			if (sessionField == null)
 			{
@@ -64,14 +67,16 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 
-			int playerNum = Integer.parseInt(playerField.getText());
+			//int playerNum = Integer.parseInt(playerField.getText());
 
+			/*
 			if (playerNum <= 1 || playerNum > 10)
 			{
 				errorLabel.setText("PlayerNum not valid, please re-enter");
 				playerField.clear();
 				valid = false;
 			}
+			*/
 			if (sessionName.length() > 30)
 			{
 				errorLabel.setText("Session name is too long. Please keep it to underneath 30 characters");
@@ -84,13 +89,21 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 
+			// grab players
+			playersGotten = username + "," + playerField.getText();
+			playerList = playersGotten.split(",");
+			int playerNum = playerList.length;
+
+			if (playerList.length < 1)
+			{
+				errorLabel.setText("Number of players not valid. Minimum of 2 and maximum of 10");
+				valid = false;
+			}
+
+			// grab issues
 			issuesGotten = issues.getText();
 			issueList = issuesGotten.split(",");
 
-			for (String element : issueList)
-				System.out.println(element);
-
-			valid = true;
 			if (valid)
 			{
 
@@ -98,8 +111,7 @@ public class PlanningPokerMainMenuController {
 
 				PlanningPokerController planningPokerController = fxmlLoader.getController();
 				planningPokerController.recieveTransferedItems(connectionString, db, col, userCol, mongoClient, loginSystem, sessionName, playerNum, issueList);
-				planningPokerController.setScene(sessionName,  issueList, playerNum);
-
+				planningPokerController.setScene(sessionName,  issueList, playerNum, playerList);
 
 				stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 				scene = new Scene(root);
@@ -116,6 +128,7 @@ public class PlanningPokerMainMenuController {
 			this.userCol = userCol;
 			this.mongoClient = mongoClient;
 			this.loginSystem = loginSystem;
+			username = loginSystem.getUsername();
 		}
 
 

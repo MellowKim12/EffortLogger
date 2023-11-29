@@ -42,7 +42,7 @@
       <Rectangle fx:id="rectangle9" arcHeight="5.0" arcWidth="5.0" fill="#c6ab9c" height="54.0" layoutX="430.0" layoutY="73.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="35.0" />
       <Rectangle fx:id="rectangle10" arcHeight="5.0" arcWidth="5.0" fill="#c6ab9c" height="54.0" layoutX="478.0" layoutY="73.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="35.0" />
       <TextArea fx:id="dbInfo" editable="false" layoutX="14.0" layoutY="177.0" prefHeight="200.0" prefWidth="372.0" />
-      <Label fx:id="issueLabel" layoutX="364.0" layoutY="15.0" text="Current Issue: Balls">
+      <Label fx:id="issueLabel" layoutX="364.0" layoutY="15.0" text="Current Issue: ">
          <font>
             <Font size="16.0" />
          </font>
