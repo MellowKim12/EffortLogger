@@ -10,11 +10,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EffortLoggerMainUI">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.StoryViewController">
    <children>
-      <Text layoutX="31.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your Logs: " wrappingWidth="70.9013671875" />
+      <Text layoutX="31.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All Stories: " wrappingWidth="70.9013671875" />
       <ButtonBar prefHeight="40.0" prefWidth="200.0" />
-      <Button id="addButton" layoutX="519.0" layoutY="109.0" mnemonicParsing="false" onAction="#addPage" style="-fx-background-color: #02cc2e;" text="add new">
+      <Button id="addButton" fx:id="addStoryButton" layoutX="519.0" layoutY="109.0" mnemonicParsing="false" onAction="#addStory" style="-fx-background-color: #02cc2e;" text="add new">
          <font>
             <Font name="System Bold" size="10.0" />
          </font>
@@ -23,7 +23,7 @@
       <Line endX="566.5" endY="136.99998474121094" startX="24.0" startY="137.0" />
       <ScrollPane layoutX="23.0" layoutY="147.0" prefHeight="239.0" prefWidth="544.0" vbarPolicy="ALWAYS">
          <content>
-            <GridPane fx:id="logPane">
+            <GridPane fx:id="storyPane">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
               </columnConstraints>
@@ -31,7 +31,7 @@
          </content>
       </ScrollPane>
       <Text fx:id="welcome" layoutX="154.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome: " />
-      <Button fx:id="storyButton" layoutX="446.0" layoutY="109.0" mnemonicParsing="false" onAction="#storyView" text="Story View">
+      <Button fx:id="logButton" layoutX="446.0" layoutY="109.0" mnemonicParsing="false" onAction="#logView" text="Log View">
          <font>
             <Font name="System Bold" size="10.0" />
          </font>

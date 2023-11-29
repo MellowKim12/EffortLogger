@@ -120,7 +120,7 @@ public class PlanningPokerController {
 			// implement code to move back to main menu
 			stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 			scene = new Scene(root);
-			stage.setTitle("EFfortLogger Main Menu");
+			stage.setTitle("EffortLogger Main Menu");
 			stage.setScene(scene);
 			stage.show();
 
