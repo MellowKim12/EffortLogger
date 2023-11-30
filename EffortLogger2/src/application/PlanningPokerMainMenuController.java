@@ -53,7 +53,7 @@ public class PlanningPokerMainMenuController {
 
 			valid = true;
 
-			if (sessionField == null)
+			if (sessionField.getText().equals(""))
 			{
 				errorLabel.setText("Title of Session cannot be blank");
 				valid = false;
@@ -61,9 +61,15 @@ public class PlanningPokerMainMenuController {
 
 			String sessionName = sessionField.getText();
 
-			if (playerField == null)
+			if (playerField.getText().equals(""))
 			{
 				errorLabel.setText("Number of players cannot be blank");
+				valid = false;
+			}
+			
+			if (playerField.getText().contains(":") || playerField.getText().contains("$") || playerField.getText().contains(" ")) {
+				errorLabel.setText("The Player Field has an invalid character");
+				playerField.clear();
 				valid = false;
 			}
 
@@ -77,18 +83,29 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 			*/
+			if (sessionName.contains(":") || sessionName.contains("$") || sessionName.contains(" ")) {
+				errorLabel.setText("Session name has an invalid character");
+				sessionField.clear();
+				valid = false;
+			}
+			
 			if (sessionName.length() > 30)
 			{
 				errorLabel.setText("Session name is too long. Please keep it to underneath 30 characters");
 				sessionField.clear();
 				valid = false;
 			}
-			if (issues == null)
+			if (issues.getText().equals(""))
 			{
 				errorLabel.setText("Issues cannot be blank. Please enter at least one issue");
 				valid = false;
 			}
 
+			if (issues.getText().contains(":") || issues.getText().contains("$") || issues.getText().contains(" ")) {
+				errorLabel.setText("The Issues input field has an invalid character");
+				sessionField.clear();
+				valid = false;
+			}
 			// grab players
 			playersGotten = username + "," + playerField.getText();
 			playerList = playersGotten.split(",");
