@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EffortLoggerMainUI">
    <children>
-      <Text layoutX="31.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your Logs: " wrappingWidth="70.9013671875" />
-      <ButtonBar prefHeight="40.0" prefWidth="200.0" />
-      <Button id="addButton" layoutX="519.0" layoutY="109.0" mnemonicParsing="false" onAction="#addPage" style="-fx-background-color: #02cc2e;" text="add new">
-         <font>
-            <Font name="System Bold" size="10.0" />
-         </font>
-      </Button>
-      <Button fx:id="startPP" layoutX="183.0" layoutY="64.0" mnemonicParsing="false" onAction="#startPoker" text="Start Playing some Planning Poker!" />
-      <Line endX="566.5" endY="136.99998474121094" startX="24.0" startY="137.0" />
-      <ScrollPane layoutX="23.0" layoutY="147.0" prefHeight="239.0" prefWidth="544.0" vbarPolicy="ALWAYS">
-         <content>
-            <GridPane fx:id="logPane">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-            </GridPane>
-         </content>
-      </ScrollPane>
-      <Text fx:id="welcome" layoutX="154.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome: " />
-      <Button fx:id="storyButton" layoutX="446.0" layoutY="109.0" mnemonicParsing="false" onAction="#storyView" text="Story View">
-         <font>
-            <Font name="System Bold" size="10.0" />
-         </font>
-      </Button>
+      <StackPane layoutX="8.0" layoutY="10.0" prefHeight="381.0" prefWidth="584.0" AnchorPane.bottomAnchor="9.199999999999989" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Group>
+               <children>
+                  <ButtonBar layoutX="59.0" layoutY="-6.0" prefHeight="29.0" prefWidth="498.0">
+                     <buttons>
+                        <Button id="addButton" mnemonicParsing="false" onAction="#addPage" style="-fx-background-color: #02cc2e;" text="add new">
+                           <font>
+                              <Font name="System Bold" size="10.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="storyButton" mnemonicParsing="false" onAction="#storyView" text="Story View">
+                           <font>
+                              <Font name="System Bold" size="10.0" />
+                           </font>
+                        </Button>
+                     </buttons>
+                  </ButtonBar>
+                  <Button fx:id="startPP" layoutX="185.0" layoutY="-38.0" mnemonicParsing="false" onAction="#startPoker" text="Start Playing some Planning Poker!" />
+                  <Line endX="567.20703125" endY="137.7071075439453" layoutX="-11.0" layoutY="-113.0" startX="24.0" startY="137.0" />
+                  <Text fx:id="welcome" layoutX="139.0" layoutY="6.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome: " translateY="-50.0" wrappingWidth="291.4648132324219" />
+                  <ScrollPane layoutX="13.0" layoutY="40.0" prefHeight="264.0" prefWidth="544.0" vbarPolicy="ALWAYS">
+                     <content>
+                        <GridPane fx:id="logPane">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                        </GridPane>
+                     </content>
+                  </ScrollPane>
+                  <Text layoutX="12.0" layoutY="13.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your Logs: " wrappingWidth="70.9013671875" />
+               </children>
+            </Group>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

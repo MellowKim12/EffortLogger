@@ -124,6 +124,7 @@ public class editLogController {
 		Scene scene = new Scene(root);
 		stage.setTitle("EffortLogger Main Menu");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
     }
 

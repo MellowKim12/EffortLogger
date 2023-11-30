@@ -79,6 +79,7 @@ public class storyThumbController {
 		Scene scene = new Scene(root);
 		stage.setTitle("Story Editor");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
     }
 
@@ -97,6 +98,7 @@ public class storyThumbController {
         Stage secondStage = new Stage();
         secondStage.setScene(secondScene); // set the scene
         secondStage.setTitle("Delete?");
+        secondStage.setResizable(false);
         secondStage.show();
 
         button.setOnAction(e->{
@@ -115,6 +117,7 @@ public class storyThumbController {
 					Scene scene = new Scene(root);
 					stage.setTitle("Story View");
 					stage.setScene(scene);
+					stage.setResizable(false);
 					stage.show();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block

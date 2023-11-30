@@ -117,6 +117,7 @@ public class PlanningPokerMainMenuController {
 				scene = new Scene(root);
 				stage.setTitle(sessionName);
 				stage.setScene(scene);
+				stage.setResizable(false);
 				stage.show();
 			}
 		}
