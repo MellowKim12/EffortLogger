@@ -60,6 +60,7 @@ public class logThumbController {
 		Scene scene = new Scene(root);
 		stage.setTitle("Log Editor");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
     }
 
@@ -78,6 +79,7 @@ public class logThumbController {
         Stage secondStage = new Stage();
         secondStage.setScene(secondScene); // set the scene
         secondStage.setTitle("Delete?");
+        secondStage.setResizable(false);
         secondStage.show();
 
         button.setOnAction(e->{
@@ -111,6 +113,7 @@ public class logThumbController {
 					Scene scene = new Scene(root);
 					stage.setTitle("EffortLogger Main Menu");
 					stage.setScene(scene);
+					stage.setResizable(false);
 					stage.show();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block

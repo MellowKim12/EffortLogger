@@ -90,6 +90,7 @@ public class StoryAdditionController {
 		scene = new Scene(root);
 		stage.setTitle("Story View");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
 	}
 }

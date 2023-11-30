@@ -128,6 +128,7 @@ public class LogAdditionController {
 		scene = new Scene(root);
 		stage.setTitle("Add Log");
 		stage.setScene(scene);
+		stage.setResizable(false);
 		stage.show();
 	}
 }
