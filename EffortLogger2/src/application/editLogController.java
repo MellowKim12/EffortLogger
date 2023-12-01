@@ -64,7 +64,7 @@ public class editLogController {
     public void editLogData(ActionEvent event) {
     	// establish connection with mongo server
     	Main updateLogs = new Main();
-    	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
+    	String connectionString = "mongodb+srv://<username>:<password>@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoClient mongoClient = MongoClients.create(connectionString);
     	MongoDatabase db = mongoClient.getDatabase("Effortlogs");
 
@@ -105,7 +105,7 @@ public class editLogController {
     	FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EffortLoggerMainUI.fxml"));
     	Parent root;
     	root = fxmlLoader.load();
-    	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
+    	String connectionString = "mongodb+srv://<username>:<password>@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoClient mongoClient = MongoClients.create(connectionString);
     	MongoDatabase db = mongoClient.getDatabase("Effortlogs");
     	MongoCollection<Document> userCol = db.getCollection("users");
