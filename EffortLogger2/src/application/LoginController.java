@@ -43,7 +43,7 @@ public class LoginController{
 		//feel free to change how I call this login you can probably make a new login object
 
 		//Setting up Mongo data
-		String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
+		String connectionString = "mongodb+srv://<username>:<password>@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
     	MongoDatabase db;
     	MongoCollection<Document> col;
     	MongoCollection<Document> userCol;
