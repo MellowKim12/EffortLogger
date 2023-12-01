@@ -92,7 +92,7 @@ public class logThumbController {
 		        	String LogIdtext = LogId.getText();
 		        	int indexOf =  LogIdtext.indexOf(" ");
 		        	int deleteLog = Integer.parseInt(LogIdtext.substring(indexOf + 1));
-		        	String connectionString = "mongodb+srv://ndlovelace13:7Cpa4yubfjj7aPql@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
+		        	String connectionString = "mongodb+srv://<username>:<password>@effortlogger.zfgzhfr.mongodb.net/?retryWrites=true&w=majority";
 		        	MongoClient mongoClient = MongoClients.create(connectionString);
 		        	MongoDatabase db = mongoClient.getDatabase("Effortlogs");
 		        	MongoCollection<Document> userCol = db.getCollection("users");
