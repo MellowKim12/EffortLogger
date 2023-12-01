@@ -67,7 +67,7 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 			
-			if (playerField.getText().contains(":") || playerField.getText().contains("$") || playerField.getText().contains(" ")) {
+			if (playerField.getText().contains(":") || playerField.getText().contains("$")) {
 				errorLabel.setText("The Player Field has an invalid character");
 				playerField.clear();
 				valid = false;
@@ -83,7 +83,7 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 			*/
-			if (sessionName.contains(":") || sessionName.contains("$") || sessionName.contains(" ")) {
+			if (sessionName.contains(":") || sessionName.contains("$")) {
 				errorLabel.setText("Session name has an invalid character");
 				sessionField.clear();
 				valid = false;
@@ -101,7 +101,7 @@ public class PlanningPokerMainMenuController {
 				valid = false;
 			}
 
-			if (issues.getText().contains(":") || issues.getText().contains("$") || issues.getText().contains(" ")) {
+			if (issues.getText().contains(":") || issues.getText().contains("$")) {
 				errorLabel.setText("The Issues input field has an invalid character");
 				sessionField.clear();
 				valid = false;

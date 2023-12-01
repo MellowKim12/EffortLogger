@@ -58,8 +58,8 @@ public class LoginController{
 		String loginUsername = username.getText();
 		String loginPassword = password.getText();
 		// do security check
-		System.out.println("This is the username: " + loginUsername);
-		System.out.println("This is the password: " + loginPassword);
+		//System.out.println("This is the username: " + loginUsername);
+		//System.out.println("This is the password: " + loginPassword);
 		loginSystem.setPassword(loginPassword);
 		loginSystem.setUsername(loginUsername);
 
