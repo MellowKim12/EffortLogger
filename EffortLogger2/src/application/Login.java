@@ -5,6 +5,7 @@ import static com.mongodb.client.model.Filters.eq;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 // designed by James Kim
@@ -13,6 +14,8 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -24,9 +27,12 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
+import de.taimos.totp.TOTP;
+
 public class Login{
 
 
+	private String superSecretPass;
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
 	private static final String ALGORITHM = "AES";
@@ -258,6 +264,17 @@ public class Login{
 			e.printStackTrace();
 		}
 	}
+
+	public String generateAuthKey()
+	{
+		SecureRandom random = new SecureRandom();
+		byte[] bytes = new byte[20];
+		random.nextBytes(bytes);
+		Base32 base32 = new Base32();
+		return base32.encodeToString(bytes);
+	}
+
+
 
 }	// end of Login.java
 
